@@ -1,8 +1,15 @@
-# React + Vite
+# React Base Template
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Created a reusable React Base Template which have already installed necessary packages such as [React Router Dom](https://reactrouter.com/en/main), [React Redux](https://redux-toolkit.js.org/tutorials/quick-start) & CSS Framework like [Tailwind CSS](https://tailwindcss.com/docs/installation). I hope using this template could save a lot of time than creating a react project from scratch.
 
-Currently, two official plugins are available:
+## Usage Instructions
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Clone this repo to your pc
+
+> git clone https://github.com/PK-WookiDooki/React_Base_Template.git
+
+and then open the project in VSCode. After that run this command
+
+> npm install
+
+in your VSCode to install all the packages. Hope you could save time using this template.
