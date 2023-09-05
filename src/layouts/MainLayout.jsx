@@ -5,7 +5,7 @@ import "./layout.css";
 
 const MainLayout = () => {
     return (
-        <main className="container">
+        <main className="wrapper">
             <Header />
 
             <section className="flex flex-1">
