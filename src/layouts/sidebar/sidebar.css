@@ -1,0 +1,19 @@
+@tailwind components;
+
+@layer components{
+  .sec-aside{
+    @apply p-3 sticky top-[76px] self-start 
+  ;}
+
+  .sidebar{
+    @apply flex flex-col items-center min-w-[220px] w-full gap-3
+  ;}
+
+  .nav-link{
+    @apply py-2 text-center w-full rounded-md duration-200 border border-blue-600 text-blue-600
+  ;}
+
+  .nav-link.active, .nav-link:hover{
+    @apply bg-blue-600 text-white
+  ;}
+}

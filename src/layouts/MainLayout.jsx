@@ -1,18 +1,42 @@
 import { Outlet } from "react-router-dom";
-import Header from "./header/Header";
-import Footer from "./footer/Footer";
 import "./layout.css";
+import SideBar from "./sidebar/SideBar";
+import Navbar from "./navbar/Navbar";
+
+import dayjs from "dayjs";
+import updateLocale from "dayjs/plugin/updateLocale";
+dayjs.extend(updateLocale);
+
+dayjs.updateLocale("en", {
+    months: [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December",
+    ],
+});
 
 const MainLayout = () => {
     return (
         <main className="wrapper">
-            <Header />
+            <Navbar />
+            <section className="inner-wrapper">
+                <SideBar />
 
-            <section className="flex flex-1">
-                <Outlet />
+                <div className="w-full bg-slate-700">
+                    <Outlet />
+                </div>
             </section>
 
-            <Footer />
+            {/*<Footer />*/}
         </main>
     );
 };

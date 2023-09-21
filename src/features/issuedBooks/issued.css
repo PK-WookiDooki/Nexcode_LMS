@@ -1,0 +1,19 @@
+.ant-select-selector, .common-blk, .ant-picker{
+  display: flex  !important;
+  align-items: center !important;
+  width: 200px !important;
+  font-family: "Montserrat" !important;
+  font-size: 16px !important;
+  letter-spacing: 0.5px;
+  outline: none !important;
+  min-height: 40px !important;
+}
+
+.ant-picker-suffix,.ant-select-arrow{
+  color: rgb(0, 0, 0, 0.6) !important;
+  font-size: 18px !important;
+}
+
+.ant-select-item-option-content{
+  font-family: "Montserrat" !important;
+}
