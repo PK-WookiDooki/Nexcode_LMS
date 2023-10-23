@@ -1,61 +1,89 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-
-export const issuedBooksApi = createApi({
-    reducerPath: "issuedBooksApi",
-    baseQuery: fetchBaseQuery({
-        baseUrl: "http://localhost:3500",
-    }),
-    tagTypes: ["issuedBooks"],
+import { baseApi } from "@/core/global/apis/baseApi";
+const endPoint = "/issued-books";
+export const issuedBooksApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({
-        getAllIssuedBooks: builder.query({
-            query: ({ keyword, date }) => ({
-                url: `/issued_books?keyword=${keyword}&date=${date}`,
+        getTotalIssuedBooks: builder.query({
+            query: (token) => ({
+                url: `${endPoint}`,
                 method: "GET",
+                headers: { authorization: `Bearer ${token}` },
+            }),
+            providesTags: ["issuedBooks"],
+        }),
+
+        getAllIssuedRecordsByFilter: builder.query({
+            query: ({ keyword, date, token }) => ({
+                url: `${endPoint}/filter?status=${keyword}&date=${date}`,
+                method: "GET",
+                headers: { authorization: `Bearer ${token}` },
             }),
             providesTags: ["issuedBooks"],
         }),
 
         addNewIssuedBooks: builder.mutation({
-            query: (book) => ({
-                url: "/issued_books",
+            query: ({ issuedBookData, token }) => ({
+                url: `${endPoint}`,
                 method: "POST",
-                body: book,
+                headers: { authorization: `Bearer ${token}` },
+                body: issuedBookData,
             }),
-            invalidatesTags: ["issuedBooks"],
+            invalidatesTags: ["books", "copiedBooks", "issuedBooks", "members"],
         }),
 
         renewIssuedBooks: builder.mutation({
-            query: (copiedId) => ({
-                url: "/issued_books/renew",
+            query: ({ ids, token }) => ({
+                url: `${endPoint}/renew`,
                 method: "PUT",
-                body: { copiedId },
+                headers: { authorization: `Bearer ${token}` },
+                body: { ids },
             }),
             invalidatesTags: ["issuedBooks"],
         }),
 
-        deleteIssuedBooks: builder.mutation({
-            query: (copiedId) => ({
-                url: "/issued_books",
+        returnIssuedBooks: builder.mutation({
+            query: ({ ids, token }) => ({
+                url: `${endPoint}/return`,
                 method: "PUT",
-                body: { copiedId },
+                headers: { authorization: `Bearer ${token}` },
+                body: { ids },
             }),
-            invalidatesTags: ["issuedBooks"],
+            invalidatesTags: ["books", "copiedBooks", "members", "issuedBooks"],
         }),
 
-        getAllOverDueBooks: builder.query({
-            query: () => ({
-                url: "/issued_books/overdue_books",
+        getAllOverdueBooks: builder.query({
+            query: (token) => ({
+                url: `${endPoint}/overdue`,
                 method: "GET",
+                headers: { authorization: `Bearer ${token}` },
             }),
-            providesTags: ["issuedBooks"],
+            providesTags: [
+                "books",
+                "issuedBooks",
+                "members",
+                "copiedBooks",
+                "auth",
+                "settings",
+            ],
+        }),
+
+        addOverdueBooksToCheckList: builder.mutation({
+            query: ({ ids, token }) => ({
+                url: `${endPoint}/check`,
+                method: "PUT",
+                headers: { authorization: `Bearer ${token}` },
+                body: { ids },
+            }),
+            invalidatesTags: ["issuedBooks"],
         }),
     }),
 });
 
 export const {
-    useGetAllIssuedBooksQuery,
+    useGetTotalIssuedBooksQuery,
+    useGetAllIssuedRecordsByFilterQuery,
     useAddNewIssuedBooksMutation,
-    useDeleteIssuedBooksMutation,
     useRenewIssuedBooksMutation,
-    useGetAllOverDueBooksQuery,
+    useReturnIssuedBooksMutation,
+    useGetAllOverdueBooksQuery,
+    useAddOverdueBooksToCheckListMutation,
 } = issuedBooksApi;

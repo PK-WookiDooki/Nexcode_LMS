@@ -1,10 +1,9 @@
-import React from "react";
 import { NavLink } from "react-router-dom";
 
-const CNavLink = ({ title, path }) => {
+const CNavLink = ({ title, path, icon }) => {
     return (
         <NavLink to={path} className="nav-link">
-            {title}
+            {icon} {title}
         </NavLink>
     );
 };

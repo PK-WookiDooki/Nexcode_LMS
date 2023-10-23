@@ -27,11 +27,11 @@ dayjs.updateLocale("en", {
 const MainLayout = () => {
     return (
         <main className="wrapper">
-            <Navbar />
+            <SideBar />
             <section className="inner-wrapper">
-                <SideBar />
+                <Navbar />
 
-                <div className="w-full bg-slate-700">
+                <div className="h-full text-black">
                     <Outlet />
                 </div>
             </section>

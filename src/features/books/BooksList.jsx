@@ -1,82 +1,47 @@
 import { Link } from "react-router-dom";
-import {
-    useDeleteBooksMutation,
-    useGetAllBooksQuery,
-    useUpdateBooksMutation,
-} from "./booksApi";
-import { Alert, Button, Form, Input, Modal, Space, Table } from "antd";
+import { useDeleteBooksMutation, useGetAllBooksQuery } from "./booksApi";
+import { Alert, Space, Table } from "antd";
 import AddNewBookForm from "./AddNewBookForm";
-import { ACTBtn, FormTlt, SearchForm, TableTlt } from "../../components";
+import { ConfirmBox, SearchForm, TableTlt, ActionBtn } from "@/components";
 import { useEffect, useState } from "react";
+import AddMoreBooksForm from "./AddMoreBooksForm";
+import ChangeBookTitleForm from "./ChangeBookTitleForm";
+import AddedCopiedBooksList from "./AddedCopiedBooksList.jsx";
+import { useSelector } from "react-redux";
 
 const BooksList = () => {
-    const { data: booksData, isLoading: isBLoading } = useGetAllBooksQuery();
-    const books = booksData?.data;
+    const { token } = useSelector((state) => state.authSlice);
+    const { data: booksData, isLoading: isBLoading } =
+        useGetAllBooksQuery(token);
+    const books = booksData;
 
-    const [search, setSearch] = useState("");
     const [message, setMessage] = useState(null);
-    const [apiStatus, setApiStatus] = useState(null);
-    const [amount, setAmount] = useState(0);
-    const [bookId, setBookId] = useState(null);
+    const [search, setSearch] = useState("");
     const [searchedBooks, setSearchedBooks] = useState([]);
-
-    const onSearchChange = (e) => {
-        const value = e.target.value;
-        setSearch(value);
-        const filteredBooks = books?.filter(
-            (book) =>
-                book?.title.toLowerCase().includes(value.toLowerCase()) ||
-                book?.id.toString().includes(value)
-        );
-        setSearchedBooks(filteredBooks);
-    };
-
-    //row selection
-
-    const [deleteBooks] = useDeleteBooksMutation();
-    const [updateBooks] = useUpdateBooksMutation();
+    const [addedCPBooks, setAddedCPBooks] = useState([]);
 
     useEffect(() => {
-        if (message !== null) {
-            setTimeout(() => {
-                setMessage(null);
-            }, 5000);
-        }
-    }, [message]);
+        const filteredBooks = books?.filter(
+            (book) =>
+                book?.title?.toLowerCase().includes(search.toLowerCase()) ||
+                book?.id?.toString().includes(search)
+        );
+        setSearchedBooks(filteredBooks);
+    }, [search]);
 
-    const deleteBooksFromDB = async (bookId) => {
-        try {
-            const { data } = await deleteBooks(bookId);
-            console.log(data);
-            setMessage(data?.message);
-            if (data?.success) {
-                setApiStatus(true);
-            } else {
-                setApiStatus(false);
-            }
-        } catch (error) {
-            throw new Error(error);
-        }
-    };
+    const [deleteBooks] = useDeleteBooksMutation();
 
-    const updateBookAmount = async () => {
-        try {
-            const book = { bookId, amount: parseInt(amount) };
-            console.log(book);
-            const { data } = await updateBooks(book);
-            console.log(data);
-            setMessage(data?.message);
-            if (data?.success) {
-                setApiStatus(true);
-            } else {
-                setApiStatus(false);
-            }
-            setAmount(null);
-            setBookId(null);
-        } catch (error) {
-            throw new Error(error);
-        }
-    };
+    //fake Data
+    const fakeData = [
+        {
+            id: 1,
+            title: "The Law of Human Nature",
+            totalBooks: 3,
+            leftoverBooks: 2,
+            totalIssuedBooks: 1,
+            damagedBooks: 0,
+        },
+    ];
 
     const columns = [
         {
@@ -88,7 +53,15 @@ const BooksList = () => {
             dataIndex: "title",
             key: "title",
             render: (_, book) => (
-                <Link to={`/books/${book?.id}`}>{book?.title}</Link>
+                <div className="flex items-center gap-3">
+                    <Link
+                        to={`/books/${book?.id}`}
+                        className="block text-darkBlue hover:text-darkBlue/80 duration-200"
+                    >
+                        {book?.title}
+                    </Link>
+                    <ChangeBookTitleForm book={book} setMessage={setMessage} />
+                </div>
             ),
         },
         {
@@ -98,8 +71,8 @@ const BooksList = () => {
         },
         {
             title: "Total Books",
-            dataIndex: "amount",
-            key: "amount",
+            dataIndex: "totalBooks",
+            key: "totalBooks",
         },
         {
             title: "Leftover Books",
@@ -107,9 +80,9 @@ const BooksList = () => {
             key: "leftoverBooks",
         },
         {
-            title: "Borrowed Books",
-            dataIndex: "borrowedBooks",
-            key: "borrowedBooks",
+            title: "Total Issued Books",
+            dataIndex: "totalIssuedBooks",
+            key: "totalIssuedBooks",
         },
         {
             title: "Damaged Books",
@@ -121,16 +94,14 @@ const BooksList = () => {
             key: "action",
             render: (_, book) => (
                 <Space size="middle">
-                    <button
-                        className="px-3 py-1 rounded-md bg-blue-600 text-white"
-                        onClick={() => setBookId(book?.id)}
-                    >
-                        Edit
-                    </button>
-                    <ACTBtn
-                        event={() => deleteBooksFromDB(book?.id)}
-                        title={"Delete"}
-                        type={"del"}
+                    <AddMoreBooksForm
+                        bookId={book?.id}
+                        setMessage={setMessage}
+                        setAddedCPBooks={setAddedCPBooks}
+                    />
+                    <ConfirmBox
+                        event={() => deleteBooks({ id: book?.id, token })}
+                        setMessage={setMessage}
                     />
                 </Space>
             ),
@@ -138,84 +109,47 @@ const BooksList = () => {
     ];
 
     return (
-        <section className="p-3">
-            <TableTlt title={"Books List"} />
-            <div className="flex items-center justify-between my-3 ">
-                <SearchForm
-                    search={search}
-                    setSearch={setSearch}
-                    onChange={onSearchChange}
+        <section className="px-10">
+            {message ? (
+                <Alert
+                    message={message}
+                    type={"success"}
+                    showIcon
+                    className="mb-11"
                 />
+            ) : (
+                ""
+            )}
+            <div className="flex items-center gap-6 mb-11 ">
+                <TableTlt title={"Books List"} />
                 <AddNewBookForm
                     setMessage={setMessage}
-                    setApiStatus={setApiStatus}
+                    setAddedCPBooks={setAddedCPBooks}
                 />
             </div>
-            <Modal
-                centered
-                open={bookId !== null}
-                onCancel={() => setBookId(null)}
-                footer={null}
-                style={{ minWidth: "550px", width: "100%" }}
-            >
-                <Form onFinish={updateBookAmount}>
-                    <FormTlt title={"Add Books"} />
-                    <div className="flex items-center gap-3">
-                        <Form.Item
-                            className="mb-0 w-full"
-                            rules={[
-                                {
-                                    min: 1,
-                                    message:
-                                        "Book amount should have at least 1.",
-                                },
-                                {
-                                    max: 100,
-                                    message:
-                                        "Book amount can't be more than 100!",
-                                },
-                            ]}
-                        >
-                            <Input
-                                type="number"
-                                onChange={(value) => setAmount(value)}
-                                defaultValue={amount}
-                                placeholder="Enter book amount . . ."
-                            />
-                        </Form.Item>
-                        <Button
-                            htmlType="submit"
-                            type="primary"
-                            className="submit-btn"
-                        >
-                            {" "}
-                            Submit{" "}
-                        </Button>
-                    </div>
-                </Form>
-            </Modal>
-
-            <div className="mt-3">
-                {message ? (
-                    <Alert
-                        message={message}
-                        type={apiStatus ? "success" : "error"}
-                        showIcon
-                        className="mb-3"
-                    />
+            <SearchForm
+                search={search}
+                setSearch={setSearch}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder={"Search by Book ID / Title"}
+            />
+            <div className="my-3">
+                {addedCPBooks?.length > 0 ? (
+                    <AddedCopiedBooksList copiedBooks={addedCPBooks} />
                 ) : (
                     ""
                 )}
+
                 <Table
                     bordered
                     columns={columns}
                     dataSource={
                         search?.trim().length > 0 ? searchedBooks : books
                     }
+                    //dataSource={fakeData}
                     loading={isBLoading}
+                    rowKey={(record) => record?.id}
                 />
-
-                {apiStatus}
             </div>
         </section>
     );

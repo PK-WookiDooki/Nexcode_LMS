@@ -1,25 +1,31 @@
 import { Alert, Button, DatePicker, Form, Input, Modal, Select } from "antd";
 import { useEffect, useState } from "react";
 import { useAddNewIssuedBooksMutation } from "./issuedBooksApi";
-import { FormTlt } from "../../components";
 import { useGetAllCopiedBooksQuery } from "../copiedBooks/copiedBooksApi";
+import { ModalHeader, FormSubmitBtn } from "@/components";
 import dayjs from "dayjs";
+import { useDispatch, useSelector } from "react-redux";
+import { scrollBackToTop } from "@/core/functions/scrollToTop";
+import { setIssuedMessage } from "./issuedSlice";
 
-const AddNewIssuedBookForm = ({ setMessage, setApiStatus }) => {
+const AddNewIssuedBookForm = () => {
     const [openModal, setOpenModal] = useState(false);
     const [form] = Form.useForm();
     const [error, setError] = useState(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const date = new Date(Date.now()).toISOString().slice(0, 10);
+    const { token } = useSelector((state) => state.authSlice);
+    const dispatch = useDispatch();
 
-    const { data: copiedBooksData } = useGetAllCopiedBooksQuery();
-    const copiedIds = copiedBooksData?.data?.map((book) => {
-        return {
-            label: book.copiedId.toString(),
-            value: book.copiedId,
-        };
-    });
-
+    const { data: copiedBooksData } = useGetAllCopiedBooksQuery(token);
+    const generatedIds = copiedBooksData
+        ?.filter((book) => book.issued === false && book.damaged === false)
+        .map((book) => {
+            return {
+                label: book.generatedId.toString(),
+                value: book.generatedId,
+            };
+        });
     const [addNewIssuedBooks] = useAddNewIssuedBooksMutation();
 
     useEffect(() => {
@@ -32,36 +38,38 @@ const AddNewIssuedBookForm = ({ setMessage, setApiStatus }) => {
 
     const onFinish = async (values) => {
         try {
-            console.log(values);
-            //console.log(copiedIds);
-            return;
+            setIsSubmitting(true);
             const issuedBookData = {
-                copiedIds,
+                generatedIds: values?.generatedIds,
                 memberId: values?.memberId,
-                issued_date: values.issued_date,
+                issuedDate: values.issuedDate.toISOString().slice(0, 10),
             };
-
-            const { data } = await addNewIssuedBooks(issuedBookData);
+            const { data, error: apiError } = await addNewIssuedBooks({
+                issuedBookData,
+                token,
+            });
             console.log(data);
             if (data?.success) {
-                setApiStatus(true);
-                setMessage(data?.message);
+                setIsSubmitting(false);
+                dispatch(
+                    setIssuedMessage({
+                        msgType: true,
+                        msgContent: data?.message,
+                    })
+                );
                 closeModal();
             } else {
-                setApiStatus(false);
-                setError(data?.message);
+                setIsSubmitting(false);
+                setError(apiError?.data?.message || apiError?.error);
             }
         } catch (error) {
             throw new Error(error);
         }
     };
 
-    const onFinishFailed = (errorInfo) => {
-        console.log("Failed:", errorInfo);
-    };
-
     const closeModal = () => {
         form.resetFields();
+        scrollBackToTop();
         setOpenModal(false);
     };
 
@@ -72,32 +80,28 @@ const AddNewIssuedBookForm = ({ setMessage, setApiStatus }) => {
                 className="submit-btn"
                 onClick={() => setOpenModal(true)}
             >
-                Add Issued Book
+                Add New Issued Book
             </Button>
             <Modal
                 centered
                 open={openModal}
                 onCancel={closeModal}
                 footer={null}
-                style={{ minWidth: "550px", width: "100%" }}
+                width={480}
+                className="form-modal"
+                closeIcon={false}
             >
+                <ModalHeader title={"Add New Issued Book"} event={closeModal} />
                 <Form
                     form={form}
                     labelCol={{
-                        span: 8,
                         style: {
                             textAlign: "left",
-                            fontFamily: ["Montserrat", "sans-serif"],
                         },
                     }}
-                    style={{
-                        width: "100%",
-                        padding: "12px",
-                    }}
                     onFinish={onFinish}
-                    onFinishFailed={onFinishFailed}
+                    layout="vertical"
                 >
-                    <FormTlt title="Add New Issued Book" />
                     {error ? (
                         <Alert
                             message={error}
@@ -109,8 +113,8 @@ const AddNewIssuedBookForm = ({ setMessage, setApiStatus }) => {
                         ""
                     )}
                     <Form.Item
-                        label="Copied ID"
-                        name="copiedId"
+                        label="Book Copied IDs"
+                        name="generatedIds"
                         rules={[
                             {
                                 required: true,
@@ -123,7 +127,7 @@ const AddNewIssuedBookForm = ({ setMessage, setApiStatus }) => {
                             allowClear
                             placeholder="Please enter book id . . ."
                             className=" issued-form "
-                            options={copiedIds}
+                            options={generatedIds}
                             direction="horizontal"
                         />
                     </Form.Item>
@@ -140,30 +144,17 @@ const AddNewIssuedBookForm = ({ setMessage, setApiStatus }) => {
                         <Input type="number" />
                     </Form.Item>
                     <Form.Item
-                        name="issued_date"
+                        name="issuedDate"
                         label="Issued Date"
-                        rules={[
-                            {
-                                required: true,
-                                message: "Please enter book issued date!",
-                            },
-                        ]}
+                        initialValue={dayjs()}
                     >
                         <DatePicker
-                            defaultValue={dayjs()}
-                            format={"DD/MM/YYYY"}
+                            format={"DD-MM-YYYY"}
                             className="common-blk"
                         />
                     </Form.Item>
 
-                    <Button
-                        htmlType="submit"
-                        type="primary"
-                        className="submit-btn block ml-auto"
-                    >
-                        {" "}
-                        Submit{" "}
-                    </Button>
+                    <FormSubmitBtn isSubmitting={isSubmitting} label={"Save"} />
                 </Form>
             </Modal>
         </section>

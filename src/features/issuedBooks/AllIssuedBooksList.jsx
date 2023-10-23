@@ -1,96 +1,68 @@
 import { Alert, DatePicker, Select, Space, Table } from "antd";
-import { ACTBtn, SearchForm, TableTlt } from "../../components";
+import { SearchForm, TableTlt } from "@/components";
 import AddNewIssuedBookForm from "./AddNewIssuedBooksForm";
-import {
-    useDeleteIssuedBooksMutation,
-    useGetAllIssuedBooksQuery,
-    useRenewIssuedBooksMutation,
-} from "./issuedBooksApi";
+import { useGetAllIssuedRecordsByFilterQuery } from "./issuedBooksApi";
 import { useEffect, useState } from "react";
 import "./issued.css";
 import dayjs from "dayjs";
+import RenewIssuedBooks from "./RenewIssuedBooks";
+import ReturnIssuedBooks from "./ReturnIssuedBooks";
+import { formatDateArray } from "@/core/functions/formatDateArray";
+import { useSelector } from "react-redux";
 
 const IssuedBooksList = () => {
+    const { token } = useSelector((state) => state.authSlice);
     const [keyword, setKeyword] = useState("all");
-    const [date, setDate] = useState(
-        new Date(Date.now()).toISOString().slice(0, 7)
-    );
+    const [date, setDate] = useState(dayjs());
     const [search, setSearch] = useState("");
-    const [deleteIssuedBooks] = useDeleteIssuedBooksMutation();
-    const [renewIssuedBooks] = useRenewIssuedBooksMutation();
-    const [message, setMessage] = useState(null);
-    const [apiStatus, setApiStatus] = useState(null);
     const [searchedBooks, setSearchedBooks] = useState([]);
+    const { data, isLoading: isISBLoading } =
+        useGetAllIssuedRecordsByFilterQuery({
+            keyword,
+            date: date.toISOString().slice(0, 7),
+            token,
+        });
+    const issuedBooks = data;
 
-    const { data, isLoading: isISBLoading } = useGetAllIssuedBooksQuery({
-        keyword,
-        date,
-    });
-    const issuedBooks = data?.data;
+    const { issuedMessage } = useSelector((state) => state.issuedSlice);
 
-    const onSearchChange = (e) => {
-        const value = e.target.value;
-        setSearch(value);
-        const filteredBooks = issuedBooks?.filter(
-            (book) =>
-                book.copiedId.toString().includes(value) ||
-                book.memberId.toString().includes(value)
-        );
-        setSearchedBooks(filteredBooks);
+    const checkedIds = issuedBooks
+        ?.filter((book) => book?.is_borrowed === 0)
+        .map((row) => row.id);
+
+    const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+
+    //for renewing & returning issued books
+    const selectableIds = selectedRowKeys?.filter(
+        (key) => !checkedIds.includes(key)
+    );
+
+    const rowSelection = {
+        selectedRowKeys,
+        onChange: (row) => {
+            setSelectedRowKeys(row);
+        },
+        getCheckboxProps: (record) => ({
+            disabled: record?.issued === false,
+        }),
     };
 
     useEffect(() => {
-        if (message !== null) {
-            setTimeout(() => {
-                setMessage(null);
-            }, 5000);
-        }
-    }, [message]);
-
-    const returnISBooks = async (copiedId) => {
-        try {
-            const isConfirm = confirm("Are you sure?");
-            if (isConfirm) {
-                const { data } = await deleteIssuedBooks(copiedId);
-                setMessage(data?.message);
-                if (data?.success) {
-                    setApiStatus(true);
-                } else {
-                    setApiStatus(false);
-                }
-            }
-        } catch (error) {
-            throw new Error(error);
-        }
-    };
-
-    const renewISBooks = async (copiedId) => {
-        try {
-            const isConfirm = confirm("Are you sure you want to extend?");
-            if (isConfirm) {
-                const { data } = await renewIssuedBooks(copiedId);
-                setMessage(data?.message);
-                if (data?.success) {
-                    setApiStatus(true);
-                } else {
-                    setApiStatus(false);
-                }
-            }
-        } catch (error) {
-            throw new Error(error);
-        }
-    };
-
-    const onDateChange = (value) => {
-        const changedDate = value?.toISOString().slice(0, 7);
-        setDate(changedDate);
         const filteredBooks = issuedBooks?.filter(
             (book) =>
-                (book.copiedId.toString().includes(search) ||
-                    book.memberId.toString().includes(search)) &&
-                book.issued_date.includes(changedDate)
+                book.generatedId
+                    .toString()
+                    .toLowerCase()
+                    .includes(search.toLowerCase()) ||
+                book.memberId.toString().includes(search) ||
+                book.name.toLowerCase().includes(search.toLowerCase())
         );
         setSearchedBooks(filteredBooks);
+    }, [search]);
+
+    const onDateChange = (value) => {
+        setDate(value);
+        setSearch("");
     };
 
     const onKeywordChange = (value) => {
@@ -105,8 +77,8 @@ const IssuedBooksList = () => {
         },
         {
             title: "Issued Books ID",
-            dataIndex: "copiedId",
-            key: "copiedId",
+            dataIndex: "generatedId",
+            key: "generatedId",
         },
         {
             title: "Member ID",
@@ -114,86 +86,68 @@ const IssuedBooksList = () => {
             key: "memberId",
         },
         {
+            title: "Name",
+            dataIndex: "name",
+            key: "name",
+        },
+        {
             title: "Issued Date",
-            dataIndex: "issued_date",
-            key: "issued_date",
-            render: (_, book) => <p> {book?.issued_date.slice(0, 10)} </p>,
+            dataIndex: "issuedDate",
+            key: "issuedDate",
+            render: (_, book) => <p> {formatDateArray(book?.issuedDate)} </p>,
         },
         {
             title: "Due Date",
-            dataIndex: "due_date",
-            key: "due_date",
-            render: (_, book) => <p> {book?.due_date.slice(0, 10)} </p>,
+            dataIndex: "dueDate",
+            key: "dueDate",
+            render: (_, book) => <p> {formatDateArray(book?.dueDate)} </p>,
         },
         {
             title: "Extension Times",
-            dataIndex: "extension_times",
-            key: "extension_times",
+            dataIndex: "extensionTimes",
+            key: "extensionTimes",
             render: (_, book) => (
-                <p>
-                    {" "}
-                    {book?.is_borrowed === "true"
-                        ? book?.extension_times
-                        : "-"}{" "}
-                </p>
+                <p> {book?.issued ? book?.extensionTimes : "-"} </p>
             ),
-        },
-        {
-            title: "Status",
-            dataIndex: "is_borrowed",
-            key: "is_borrowed",
-            render: (_, book) => (
-                <p>
-                    {" "}
-                    {book?.is_borrowed === "true"
-                        ? "Borrowed"
-                        : "Returned"}{" "}
-                </p>
-            ),
-        },
-        {
-            title: "Action",
-            key: "action",
-            render: (_, book) =>
-                book?.is_borrowed === "true" ? (
-                    <Space size="middle">
-                        {" "}
-                        <ACTBtn
-                            event={() => renewISBooks(book?.copiedId)}
-                            title={"Renew"}
-                            type={"edit"}
-                        />
-                        <ACTBtn
-                            event={() => returnISBooks(book?.copiedId)}
-                            title={"Return"}
-                            type={"del"}
-                        />{" "}
-                    </Space>
-                ) : (
-                    ""
-                ),
         },
     ];
 
     return (
-        <section className="p-3">
-            <TableTlt title={"Issued Books List"} />
-            <div className="flex items-center justify-between my-3">
-                <SearchForm
-                    search={search}
-                    setSearch={setSearch}
-                    onChange={onSearchChange}
+        <section className="px-10">
+            {issuedMessage.msgType && issuedMessage.msgContent ? (
+                <Alert
+                    message={issuedMessage.msgContent}
+                    type="success"
+                    showIcon
+                    className="mb-11"
                 />
+            ) : (
+                ""
+            )}
+
+            <div className="flex items-center gap-6 mb-11">
+                <TableTlt title={"Issued Books List"} />
+                <AddNewIssuedBookForm />
+            </div>
+            <div className="mb-6 flex items-center justify-between">
                 <div className="flex items-center gap-5">
+                    <SearchForm
+                        search={search}
+                        setSearch={setSearch}
+                        onChange={(e) => setSearch(e.target.value)}
+                        placeholder={
+                            "Search by Copy Book ID / Member ID / Name"
+                        }
+                    />
                     <DatePicker
                         picker="month"
                         onChange={onDateChange}
                         defaultValue={dayjs()}
-                        format={"MMMM/YYYY"}
+                        format={"MMMM YYYY"}
                         allowClear={false}
                     />{" "}
                     <Select
-                        defaultValue={"all"}
+                        defaultValue={keyword}
                         onChange={onKeywordChange}
                         options={[
                             {
@@ -201,40 +155,38 @@ const IssuedBooksList = () => {
                                 value: "all",
                             },
                             {
-                                label: "Borrowed Books",
-                                value: "bbl",
+                                label: "Issued Books",
+                                value: "issued",
                             },
                             {
                                 label: "Returned Books",
-                                value: "rbl",
+                                value: "returned",
                             },
                         ]}
                     ></Select>
-                    <AddNewIssuedBookForm
-                        setMessage={setMessage}
-                        setApiStatus={setApiStatus}
+                </div>
+                <div className="flex items-center gap-5">
+                    <RenewIssuedBooks
+                        issuedBookIds={selectedRowKeys}
+                        setSelectedRowKeys={setSelectedRowKeys}
+                    />
+                    <ReturnIssuedBooks
+                        issuedBookIds={selectedRowKeys}
+                        setSelectedRowKeys={setSelectedRowKeys}
                     />
                 </div>
             </div>
-            {message !== null ? (
-                <Alert
-                    message={message}
-                    type={apiStatus ? "success" : "error"}
-                    showIcon
-                />
-            ) : (
-                ""
-            )}
-            <div className="mt-3">
-                <Table
-                    bordered
-                    columns={columns}
-                    dataSource={
-                        search?.trim().length > 0 ? searchedBooks : issuedBooks
-                    }
-                    loading={isISBLoading}
-                />
-            </div>
+
+            <Table
+                bordered
+                columns={columns}
+                dataSource={
+                    search?.trim().length > 0 ? searchedBooks : issuedBooks
+                }
+                loading={isISBLoading}
+                rowKey={(record) => record?.id}
+                rowSelection={rowSelection}
+            />
         </section>
     );
 };

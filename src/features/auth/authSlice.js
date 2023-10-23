@@ -17,7 +17,7 @@ export const authSlice = createSlice({
             state.token = payload.token;
         },
 
-        removeCookies: (state) => {
+        removeCookies: () => {
             Cookies.remove("user");
             Cookies.remove("token");
         },

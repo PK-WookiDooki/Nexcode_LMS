@@ -1,49 +1,51 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-
-export const membersApi = createApi({
-    reducerPath: "membersApi",
-    baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:3500/members" }),
-    tagTypes: ["members"],
+//injections
+import { baseApi } from "@/core/global/apis/baseApi";
+const endPoint = "/members";
+export const membersApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({
         getAllMembers: builder.query({
-            query: (keyword) => ({
-                url: `?keyword=${keyword}`,
+            query: ({ token, keyword }) => ({
+                url: `${endPoint}/filter?status=${keyword}`,
                 method: "GET",
+                headers: { Authorization: `Bearer ${token}` },
             }),
-            providesTags: ["members"],
+            providesTags: ["issuedBooks", "members"],
         }),
 
         addNewMembers: builder.mutation({
-            query: (member) => ({
-                url: "/",
+            query: ({ memberData, token }) => ({
+                url: `${endPoint}`,
                 method: "POST",
-                body: member,
+                headers: { Authorization: `Bearer ${token}` },
+                body: memberData,
             }),
             invalidatesTags: ["members"],
         }),
 
         updateMembers: builder.mutation({
-            query: (member) => ({
-                url: "/",
+            query: ({ memberData, token, id }) => ({
+                url: `${endPoint}/${id}`,
                 method: "PUT",
-                body: member,
+                headers: { Authorization: `Bearer ${token}` },
+                body: memberData,
             }),
             invalidatesTags: ["members"],
         }),
 
         deleteMembers: builder.mutation({
-            query: (memberId) => ({
-                url: "/",
+            query: ({ id, token }) => ({
+                url: `${endPoint}/${id}`,
                 method: "DELETE",
-                body: { memberId },
+                headers: { Authorization: `Bearer ${token}` },
             }),
             invalidatesTags: ["members"],
         }),
 
         getMemberById: builder.query({
-            query: (memberId) => ({
-                url: `/${memberId}`,
+            query: ({ token, id }) => ({
+                url: `${endPoint}/${id}`,
                 method: "GET",
+                headers: { Authorization: `Bearer ${token}` },
             }),
             providesTags: ["members"],
         }),

@@ -1,80 +1,80 @@
 import { Alert, Button, Form, Input, Modal } from "antd";
 import { useEffect, useState } from "react";
-import { useGetMemberByIdQuery, useUpdateMembersMutation } from "./membersApi";
-import { FormTlt } from "../../components";
+import { useUpdateMembersMutation } from "./membersApi";
+import { ModalHeader } from "@/components";
+import { useSelector } from "react-redux";
+import { ActionBtn } from "@/components";
 
-const EditMemberForm = ({ setMessage, memberId }) => {
+const EditMemberForm = ({ setMessage, member }) => {
+    const { token } = useSelector((state) => state.authSlice);
     const [openModal, setOpenModal] = useState(false);
     const [error, setError] = useState(null);
-
-    const { data: memberData } = useGetMemberByIdQuery(memberId);
-    const currentMember = memberData?.data;
     const [form] = Form.useForm();
 
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
     useEffect(() => {
-        if (currentMember) {
-            form.setFieldValue("name", currentMember?.name);
-            form.setFieldValue("phone", currentMember?.phone);
-            form.setFieldValue("address", currentMember?.address);
+        if (member) {
+            form.setFieldValue("name", member?.name);
+            form.setFieldValue("phone", member?.phone);
+            form.setFieldValue("address", member?.address);
         }
     }, [openModal]);
 
     const [updateMembers] = useUpdateMembersMutation();
     const onFinish = async (values) => {
         try {
-            const updatedMemberData = { memberId, ...values };
-            const { data } = await updateMembers(updatedMemberData);
+            setIsSubmitting(true);
+            const { data, error: apiError } = await updateMembers({
+                memberData: values,
+                id: member?.id,
+                token,
+            });
             if (data?.success) {
                 setMessage(data?.message);
                 closeModal();
+                setIsSubmitting(false);
             } else {
-                setError(data?.message);
+                setError(apiError?.data?.message || apiError?.error);
+                setIsSubmitting(false);
             }
         } catch (error) {
             throw new Error(error);
         }
     };
 
-    const onFinishFailed = (errorInfo) => {
-        console.log("Failed:", errorInfo);
-    };
-
     const closeModal = () => {
         setOpenModal(false);
-        form.resetFields();
+        setError(null);
     };
 
     return (
         <section className="">
-            <button
-                className="px-3 py-1 rounded-md bg-blue-600 text-white"
-                onClick={() => setOpenModal(true)}
-            >
-                Edit
-            </button>
-
+            <ActionBtn
+                label={"Edit"}
+                actionFor={"edit"}
+                event={() => setOpenModal(true)}
+            />
             <Modal
                 centered
                 open={openModal}
                 onCancel={closeModal}
                 footer={null}
-                style={{ minWidth: "550px", width: "100%" }}
+                width={480}
+                className="form-modal"
+                closeIcon={false}
             >
+                <ModalHeader title={"Edit Member"} event={closeModal} />
+
                 <Form
                     form={form}
+                    layout="vertical"
                     labelCol={{
-                        span: 8,
                         style: {
                             textAlign: "left",
-                            fontFamily: ["Montserrat", "sans-serif"],
                         },
                     }}
-                    style={{
-                        width: "100%",
-                        padding: "12px",
-                    }}
                     onFinish={onFinish}
-                    onFinishFailed={onFinishFailed}
                 >
                     {error !== null ? (
                         <Alert
@@ -86,7 +86,6 @@ const EditMemberForm = ({ setMessage, memberId }) => {
                     ) : (
                         ""
                     )}
-                    <FormTlt title={"Edit Member"} />
                     <Form.Item
                         label="Name"
                         name="name"

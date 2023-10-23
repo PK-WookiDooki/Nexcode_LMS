@@ -1,19 +1,20 @@
 import { Alert, Button, Form, Modal } from "antd";
 import { useEffect, useState } from "react";
-import { useUpdateAdminDataMutation } from "./adminApi";
+import { useChangePasswordMutation } from "./authApi";
 import Password from "antd/es/input/Password";
 import { useDispatch, useSelector } from "react-redux";
 import { removeCookies, setLoginStatus } from "./authSlice";
-import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
-import { FormTlt } from "../../components";
+import { ModalHeader } from "@/components";
+import { FormSubmitBtn } from "../../components";
 
 const ChangePasswordForm = () => {
+    const { token } = useSelector((state) => state.authSlice);
     const [openModal, setOpenModal] = useState(false);
     const [form] = Form.useForm();
     const [error, setError] = useState(null);
 
-    const [updateAdminData] = useUpdateAdminDataMutation();
+    const [changePassword] = useChangePasswordMutation();
     const { user } = useSelector((state) => state.authSlice);
     const dispatch = useDispatch();
     const nav = useNavigate();
@@ -28,12 +29,14 @@ const ChangePasswordForm = () => {
 
     const onFinish = async (values) => {
         try {
-            const updatedPassword = {
-                email: user?.email,
-                currentPassword: values.currentPassword,
+            const updatedPasswords = {
+                oldPassword: values.currentPassword,
                 newPassword: values.newPassword,
             };
-            const { data } = await updateAdminData(updatedPassword);
+            const { data, error: apiError } = await changePassword({
+                updatedPasswords,
+                token,
+            });
             console.log(data);
             if (data?.success) {
                 closeModal();
@@ -44,17 +47,13 @@ const ChangePasswordForm = () => {
                         token: null,
                     })
                 );
-                nav("/login", { state: data?.message });
+                nav("/login");
             } else {
-                setError(data?.message);
+                setError(apiError?.data?.message || apiError?.error);
             }
         } catch (error) {
             throw new Error(error);
         }
-    };
-
-    const onFinishFailed = (errors) => {
-        console.log(errors);
     };
 
     const closeModal = () => {
@@ -73,27 +72,31 @@ const ChangePasswordForm = () => {
                 open={openModal}
                 onCancel={closeModal}
                 footer={null}
-                style={{ minWidth: "550px", width: "100%" }}
+                width={480}
+                className="form-modal"
+                closeIcon={false}
             >
+                <ModalHeader
+                    title={"Change Password"}
+                    event={() => setOpenModal(false)}
+                />
                 <Form
                     onFinish={onFinish}
-                    onFinishFailed={onFinishFailed}
                     form={form}
+                    layout="vertical"
                     labelCol={{
-                        span: 10,
                         style: {
                             textAlign: "left",
-                            fontFamily: ["Montserrat", "sans-serif"],
                         },
                     }}
-                    style={{
-                        width: "100%",
-                        padding: "12px",
-                    }}
                 >
-                    <FormTlt title={"Change New Password"} />
                     {error ? (
-                        <Alert message={error} type="error" showIcon />
+                        <Alert
+                            message={error}
+                            type="error"
+                            showIcon
+                            className="mb-3"
+                        />
                     ) : (
                         ""
                     )}
@@ -118,8 +121,15 @@ const ChangePasswordForm = () => {
                                 message: "New password is required!",
                             },
                             {
-                                len: "8",
-                                message: "Password cant't be too short!",
+                                pattern:
+                                    /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+                                message:
+                                    "Password must have minimum eight characters, at least one uppercase letter, one number and one special character.",
+                            },
+                            {
+                                min: 8,
+                                message:
+                                    "Password must have at least 8 characters!",
                             },
                         ]}
                     >
@@ -154,14 +164,11 @@ const ChangePasswordForm = () => {
                         <Password />
                     </Form.Item>
 
-                    <Button
-                        type="primary"
-                        htmlType="submit"
-                        className="submit-btn block ml-auto"
-                    >
-                        {" "}
-                        Submit{" "}
-                    </Button>
+                    <FormSubmitBtn
+                        label={"Confirm"}
+                        isFullWidth={true}
+                        extraStyle={"mt-3"}
+                    />
                 </Form>
             </Modal>
         </section>

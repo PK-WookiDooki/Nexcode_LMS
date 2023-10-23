@@ -2,7 +2,16 @@
 export default {
     content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
     theme: {
-        extend: {},
+        extend: {
+            colors: {
+                primary: "#1890FF",
+                lightBlue: "#F0F5FF",
+                darkBlue: "#096DD9",
+                danger: "#FF4D4F",
+                secondary: "#F5F5F5",
+                disabledGray: "#BFBFBF",
+            },
+        },
         fontFamily: {
             sans: ["Montserrat", "sans-serif"],
         },

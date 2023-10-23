@@ -1,28 +1,39 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-
-export const copiedBooksApi = createApi({
-    reducerPath: "copiedBooksApi",
-    baseQuery: fetchBaseQuery({
-        baseUrl: "http://localhost:3500/copied_books",
-    }),
-    tagTypes: ["copiedBooks"],
+import { baseApi } from "@/core/global/apis/baseApi";
+const endPoint = "/copied-books";
+export const copiedBooksApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({
         getAllCopiedBooks: builder.query({
-            query: () => ({
-                url: "/",
+            query: (token) => ({
+                url: `${endPoint}`,
                 method: "GET",
+                headers: { authorization: `Bearer ${token}` },
             }),
-            providesTags: ["copiedBooks"],
+            providesTags: ["copiedBooks", "books", "issuedBooks"],
         }),
-        setCPBooksStatus: builder.mutation({
-            query: () => ({
-                url: "/",
-                method: "PUT",
+
+        getCopiedBooksByOrgId: builder.query({
+            query: ({ token, bookId }) => ({
+                url: `${endPoint}/${bookId}`,
+                method: "GET",
+                headers: { authorization: `Bearer ${token}` },
             }),
-            invalidatesTags: ["copiedBooks"],
+            providesTags: ["copiedBooks", "books", "issuedBooks"],
+        }),
+
+        setCopiedBooksStatus: builder.mutation({
+            query: ({ generatedIds, token }) => ({
+                url: `${endPoint}`,
+                method: "PUT",
+                headers: { authorization: `Bearer ${token}` },
+                body: { generatedIds },
+            }),
+            invalidatesTags: ["copiedBooks", "books"],
         }),
     }),
 });
 
-export const { useGetAllCopiedBooksQuery, useSetCPBooksStatusMutation } =
-    copiedBooksApi;
+export const {
+    useGetAllCopiedBooksQuery,
+    useGetCopiedBooksByOrgIdQuery,
+    useSetCopiedBooksStatusMutation,
+} = copiedBooksApi;

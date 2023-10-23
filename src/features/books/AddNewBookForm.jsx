@@ -1,8 +1,11 @@
-import { Button, Form, Input, Modal } from "antd";
+import { Button, Form, Input, InputNumber, Modal } from "antd";
 import { useEffect, useState } from "react";
 import { useAddNewBooksMutation } from "./booksApi";
-import { FormTlt } from "../../components";
-const AddNewBookForm = ({ setMessage, setApiStatus }) => {
+import { ModalHeader, FormSubmitBtn } from "@/components";
+import { useSelector } from "react-redux";
+const AddNewBookForm = ({ setMessage, setAddedCPBooks }) => {
+    const { token } = useSelector((state) => state.authSlice);
+
     const [form] = Form.useForm();
     const [openModal, setOpenModal] = useState(false);
     const [error, setError] = useState(null);
@@ -19,20 +22,21 @@ const AddNewBookForm = ({ setMessage, setApiStatus }) => {
 
     const onFinish = async (values) => {
         try {
-            const { data } = await addNewBooks(values);
-            if (data?.success) {
+            const { data, error: apiError } = await addNewBooks({
+                bookData: values,
+                token,
+            });
+
+            if (data?.apiResponse.success) {
                 setMessage(data?.message);
                 closeModal();
+                setAddedCPBooks(data?.copiedBooks);
             } else {
-                setError(data?.message);
+                setError(apiError?.data?.message || apiError?.error);
             }
         } catch (error) {
             throw new Error(error);
         }
-    };
-
-    const onFinishFailed = (errorInfo) => {
-        console.log("Failed:", errorInfo);
     };
 
     const closeModal = () => {
@@ -54,26 +58,24 @@ const AddNewBookForm = ({ setMessage, setApiStatus }) => {
                 open={openModal}
                 onCancel={closeModal}
                 footer={null}
-                style={{ minWidth: "550px", width: "100%" }}
+                width={480}
+                className="form-modal"
+                closeIcon={false}
             >
+                <ModalHeader
+                    title={"Add New Book"}
+                    event={() => setOpenModal(false)}
+                />
                 <Form
                     form={form}
+                    layout="vertical"
                     labelCol={{
-                        span: 8,
                         style: {
                             textAlign: "left",
-                            fontFamily: ["Montserrat", "sans-serif"],
                         },
                     }}
-                    style={{
-                        width: "100%",
-                        padding: "12px",
-                    }}
                     onFinish={onFinish}
-                    onFinishFailed={onFinishFailed}
                 >
-                    <FormTlt title="Add New Book" />
-
                     <Form.Item
                         label="Title"
                         name="title"
@@ -82,36 +84,34 @@ const AddNewBookForm = ({ setMessage, setApiStatus }) => {
                                 required: true,
                                 message: "Please enter book title!",
                             },
+                            {
+                                min: 4,
+                                message: "Book title is too short!",
+                            },
                         ]}
                     >
                         <Input />
                     </Form.Item>
                     <Form.Item
                         label="Amount"
-                        name="amount"
+                        name="totalBooks"
                         rules={[
                             {
                                 required: true,
                                 message: "Please enter book amount!",
                             },
                             {
+                                type: "number",
                                 min: 1,
                                 message:
                                     "There must have to be at least one book.",
                             },
                         ]}
                     >
-                        <Input type="number" />
+                        <InputNumber className="!h-10 !w-full flex flex-col justify-center" />
                     </Form.Item>
 
-                    <Button
-                        htmlType="submit"
-                        type="primary"
-                        className="submit-btn block ml-auto"
-                    >
-                        {" "}
-                        Submit{" "}
-                    </Button>
+                    <FormSubmitBtn label={"Save"} />
                 </Form>
             </Modal>
         </section>

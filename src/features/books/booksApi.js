@@ -1,68 +1,63 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-
-export const booksApi = createApi({
-    reducerPath: "booksApi",
-    baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:3500" }),
-    tagTypes: ["books", "copiedBooks"],
+//injections
+import { baseApi } from "@/core/global/apis/baseApi";
+const endPoint = "/books";
+export const booksApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({
         getAllBooks: builder.query({
-            query: () => ({
-                url: `/books`,
+            query: (token) => ({
+                url: `${endPoint}`,
                 method: "GET",
+                headers: { Authorization: `Bearer ${token}` },
             }),
-            providesTags: ["books"],
+            providesTags: ["books", "copiedBooks", "issuedBooks"],
         }),
 
         addNewBooks: builder.mutation({
-            query: (book) => ({
-                url: "/books",
+            query: ({ bookData, token }) => ({
+                url: `${endPoint}`,
                 method: "POST",
-                body: book,
+                headers: { Authorization: `Bearer ${token}` },
+                body: bookData,
             }),
             invalidatesTags: ["books", "copiedBooks"],
         }),
 
         updateBooks: builder.mutation({
-            query: (book) => ({
-                url: "/books",
+            query: ({ bookData, token }) => ({
+                url: `${endPoint}/book-title`,
                 method: "PUT",
-                body: book,
+                headers: { Authorization: `Bearer ${token}` },
+                body: bookData,
+            }),
+            invalidatesTags: ["books", "copiedBooks", "issuedBooks"],
+        }),
+
+        addMoreBooks: builder.mutation({
+            query: ({ bookData, token }) => ({
+                url: `${endPoint}/book-amount`,
+                method: "PUT",
+                headers: { Authorization: `Bearer ${token}` },
+                body: bookData,
             }),
             invalidatesTags: ["books", "copiedBooks"],
         }),
 
         deleteBooks: builder.mutation({
-            query: (bookId) => ({
-                url: "/books",
+            query: ({ id, token }) => ({
+                url: `${endPoint}/${id}`,
                 method: "DELETE",
-                body: { bookId },
+                headers: { Authorization: `Bearer ${token}` },
             }),
-            invalidatesTags: ["books", "copiedBooks"],
+            invalidatesTags: ["books", "copiedBooks", "issuedBooks"],
         }),
 
-        getAllCopiedBooks: builder.query({
-            query: () => ({
-                url: "/copied_books",
+        getBookById: builder.query({
+            query: ({ id, token }) => ({
+                url: `${endPoint}/${id}`,
                 method: "GET",
+                headers: { Authorization: `Bearer ${token}` },
             }),
-            providesTags: ["copiedBooks", "books"],
-        }),
-
-        getAllCPBByOrgBId: builder.query({
-            query: (bookId) => ({
-                url: `/copied_books/${bookId}`,
-                method: "GET",
-            }),
-            providesTags: ["copiedBooks", "books"],
-        }),
-
-        setCPBStatus: builder.mutation({
-            query: (book) => ({
-                url: "/copied_books",
-                method: "PUT",
-                body: book,
-            }),
-            invalidatesTags: ["copiedBooks", "books"],
+            providesTags: ["books"],
         }),
     }),
 });
@@ -72,7 +67,6 @@ export const {
     useAddNewBooksMutation,
     useUpdateBooksMutation,
     useDeleteBooksMutation,
-    useGetAllCopiedBooksQuery,
-    useSetCPBStatusMutation,
-    useGetAllCPBByOrgBIdQuery,
+    useGetBookByIdQuery,
+    useAddMoreBooksMutation,
 } = booksApi;

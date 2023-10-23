@@ -1,0 +1,11 @@
+/* confirmation box */
+
+.confirm-box .ant-modal-content{
+  padding: 30px !important;
+}
+
+.confirm-box .ant-modal-footer{
+  display:  flex;
+  justify-content: center;
+  gap: 12px;
+}

@@ -1,18 +1,18 @@
-import { Alert, Space, Table } from "antd";
-import { ACTBtn, TableTlt } from "../../components";
+import { Alert, Table } from "antd";
+import { TableTlt } from "@/components";
 import {
-    useSetCPBStatusMutation,
+    useSetCopiedBooksStatusMutation,
     useGetAllCopiedBooksQuery,
-} from "../books/booksApi";
+} from "./copiedBooksApi";
 import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 const CopiedBooksList = () => {
-    const { data, isLoading } = useGetAllCopiedBooksQuery();
-
+    const { token } = useSelector((state) => state.authSlice);
+    const { data, isLoading } = useGetAllCopiedBooksQuery(token);
     const [message, setMessage] = useState(null);
     const [apiStatus, setApiStatus] = useState(null);
-
-    const copiedBooks = data?.data;
-    const [setCPBstatus] = useSetCPBStatusMutation();
+    const copiedBooks = data;
+    const [setCopiedBooksStatus] = useSetCopiedBooksStatusMutation();
 
     useEffect(() => {
         if (message !== null) {
@@ -22,11 +22,9 @@ const CopiedBooksList = () => {
         }
     }, [message]);
 
-    const deleteBooksFromDB = async (copiedId, dmgStatus) => {
+    const deleteBooksFromDB = async (generatedId) => {
         try {
-            const isDamaged = dmgStatus === "true" ? "false" : "true";
-            const updatedData = { copiedId, isDamaged };
-            const { data } = await setCPBstatus(updatedData);
+            const { data } = await setCopiedBooksStatus({ generatedId, token });
             setMessage(data?.message);
             if (data?.success) {
                 setApiStatus(true);
@@ -45,45 +43,28 @@ const CopiedBooksList = () => {
         },
         {
             title: "Copied ID",
-            dataIndex: "copiedId",
-            key: "copiedId",
+            dataIndex: "generatedId",
+            key: "generatedId",
             render: (_, book) => (
-                <p
-                    className={` ${
-                        book?.isDamaged === "true" ? " bg-red-400 " : ""
-                    }  `}
-                >
+                <p className={` ${book?.isDamaged ? " bg-red-400 " : ""}  `}>
                     {" "}
-                    {book?.copiedId}{" "}
+                    {book?.generatedId}{" "}
                 </p>
             ),
         },
-        {
-            title: "Original Book ID",
-            dataIndex: "bookId",
-            key: "bookId",
-        },
+
         {
             title: "Damaged Status",
-            dataIndex: "isDamaged",
-            key: "isDamaged",
-            render: (_, book) => (
-                <p> {book?.isDamaged === "true" ? "YES" : "NO"} </p>
-            ),
+            dataIndex: "damaged",
+            key: "damaged",
+            render: (_, book) => <p> {book?.damaged ? "Damaged" : "Fine"} </p>,
         },
         {
-            title: "Action",
-            key: "action",
+            title: "Issued Status",
+            dataIndex: "issued",
+            key: "issued",
             render: (_, book) => (
-                <Space size="middle">
-                    <ACTBtn
-                        event={() =>
-                            deleteBooksFromDB(book?.copiedId, book?.isDamaged)
-                        }
-                        title={book?.isDamaged === "true" ? "Refill" : "Damage"}
-                        type={"del"}
-                    />
-                </Space>
+                <p> {book?.issued ? "Borrowed" : "Available"} </p>
             ),
         },
     ];

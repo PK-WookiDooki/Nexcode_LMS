@@ -14,6 +14,9 @@ export { default as ODDBooks } from "./issuedBooks/ODDBooksList";
 export { default as AllIssuedBooks } from "./issuedBooks/AllIssuedBooksList";
 
 //admins
-export { default as AdminSettings } from "./admin/Settings";
-export { default as AccountLogin } from "./admin/Login";
-export { default as CPwsForm } from "./admin/ChangePasswordForm";
+export { default as AdminSettings } from "./auth/Settings";
+export { default as AccountLogin } from "./auth/Login";
+export { default as CPwsForm } from "./auth/ChangePasswordForm";
+export { default as ResetPassword } from "./auth/ResetPasswordForm";
+
+//

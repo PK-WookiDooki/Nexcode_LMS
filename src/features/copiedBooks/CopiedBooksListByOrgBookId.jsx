@@ -1,43 +1,28 @@
-import { Alert, Space, Table } from "antd";
-import { ACTBtn, TableTlt } from "../../components";
-import {
-    useSetCPBStatusMutation,
-    useGetAllCPBByOrgBIdQuery,
-} from "../books/booksApi";
-import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Alert, Table } from "antd";
+import { TableTlt } from "@/components";
+import { useGetCopiedBooksByOrgIdQuery } from "./copiedBooksApi";
+import { useState } from "react";
+import { useParams, Link } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { MdArrowBack } from "react-icons/md";
+import SetDamagedBooks from "./SetDamagedBooks";
 const CopiedBooksList = () => {
     const { bookId } = useParams();
-
-    const { data, isLoading } = useGetAllCPBByOrgBIdQuery(bookId);
+    const { token } = useSelector((state) => state.authSlice);
+    const { data, isLoading } = useGetCopiedBooksByOrgIdQuery({
+        bookId,
+        token,
+    });
+    const copiedBooks = data;
     const [message, setMessage] = useState(null);
-    const [apiStatus, setApiStatus] = useState(null);
 
-    const copiedBooks = data?.data;
-    const [setCPBStatus] = useSetCPBStatusMutation();
-
-    useEffect(() => {
-        if (message !== null) {
-            setTimeout(() => {
-                setMessage(null);
-            }, 5000);
-        }
-    }, [message]);
-
-    const deleteBooksFromDB = async (copiedId, dmgStatus) => {
-        try {
-            const isDamaged = dmgStatus === "true" ? "false" : "true";
-            const updatedData = { copiedId, isDamaged };
-            const { data } = await setCPBStatus(updatedData);
-            setMessage(data?.message);
-            if (data?.success) {
-                setApiStatus(true);
-            } else {
-                setApiStatus(false);
-            }
-        } catch (error) {
-            throw new Error(error);
-        }
+    const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+    const rowSelection = {
+        selectedRowKeys,
+        onChange: (generatedId) => setSelectedRowKeys(generatedId),
+        getCheckboxProps: (record) => ({
+            disabled: record?.damaged === true,
+        }),
     };
 
     const columns = [
@@ -47,69 +32,98 @@ const CopiedBooksList = () => {
         },
         {
             title: "Copied ID",
-            dataIndex: "copiedId",
-            key: "copiedId",
+            dataIndex: "generatedId",
+            key: "generatedId",
+        },
+        {
+            title: "Book Title",
+            dataIndex: "title",
+            key: "title",
+        },
+        {
+            title: "Issued Status",
+            dataIndex: "issued",
+            key: "issued",
             render: (_, book) => (
                 <p
-                    className={` ${
-                        book?.isDamaged === "true" ? " bg-red-400 " : ""
-                    }  `}
+                    className={` flex items-center gap-2 ${
+                        book?.issued || book?.damaged
+                            ? "text-red-600"
+                            : " text-emerald-500 "
+                    } `}
                 >
-                    {" "}
-                    {book?.copiedId}{" "}
+                    <span
+                        className={`block h-2 w-2 rounded-full ${
+                            book?.issued || book?.damaged
+                                ? "bg-red-600"
+                                : "bg-emerald-500"
+                        }`}
+                    ></span>
+                    {book?.issued
+                        ? "Borrowed"
+                        : book?.damaged
+                        ? "Not Available"
+                        : "Available"}{" "}
                 </p>
             ),
         },
         {
-            title: "Original Book ID",
-            dataIndex: "bookId",
-            key: "bookId",
-        },
-        {
             title: "Damaged Status",
-            dataIndex: "isDamaged",
-            key: "isDamaged",
+            dataIndex: "damaged",
+            key: "damaged",
             render: (_, book) => (
-                <p> {book?.isDamaged === "true" ? "YES" : "NO"} </p>
-            ),
-        },
-        {
-            title: "Action",
-            key: "action",
-            render: (_, book) => (
-                <Space size="middle">
-                    <ACTBtn
-                        event={() =>
-                            deleteBooksFromDB(book?.copiedId, book?.isDamaged)
-                        }
-                        title={book?.isDamaged === "true" ? "Refill" : "Damage"}
-                        type={"del"}
-                    />
-                </Space>
+                <p
+                    className={` flex items-center gap-2 ${
+                        book?.damaged ? "text-red-600" : " text-emerald-500 "
+                    } `}
+                >
+                    <span
+                        className={`block h-2 w-2 rounded-full ${
+                            book?.damaged ? "bg-red-600" : "bg-emerald-500"
+                        }`}
+                    ></span>
+                    {book?.damaged ? "Damaged" : "Fine"}{" "}
+                </p>
             ),
         },
     ];
 
     return (
-        <section className="p-3">
-            <TableTlt title={"Copied Books List"} />
-            <div className="mt-3">
-                {message ? (
-                    <Alert
-                        message={message}
-                        type={apiStatus ? "success" : "error"}
-                        showIcon
-                        className="mb-3"
-                    />
-                ) : (
-                    ""
-                )}
-                <Table
-                    columns={columns}
-                    dataSource={copiedBooks}
-                    loading={isLoading}
+        <section className="px-10">
+            {" "}
+            {message ? (
+                <Alert
+                    message={message}
+                    type="success"
+                    showIcon
+                    className="mb-3"
+                />
+            ) : (
+                ""
+            )}
+            <Link
+                to={".."}
+                className="flex items-center gap-3 text-black hover:text-black/80 duration-200 w-fit"
+            >
+                {" "}
+                <MdArrowBack className="text-xl" /> Books List
+            </Link>
+            <div className="flex items-center justify-between my-6">
+                <TableTlt title={`Copied Books ID List`} />
+                <SetDamagedBooks
+                    generatedIds={selectedRowKeys}
+                    setSelectedRowKeys={setSelectedRowKeys}
+                    setMessage={setMessage}
                 />
             </div>
+            <Table
+                className="copied-table"
+                columns={columns}
+                dataSource={copiedBooks}
+                loading={isLoading}
+                rowSelection={rowSelection}
+                rowKey={(record) => record?.generatedId}
+            />
         </section>
     );
 };

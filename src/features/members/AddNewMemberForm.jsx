@@ -1,38 +1,37 @@
 import { Alert, Button, Form, Input, Modal } from "antd";
 import { useState } from "react";
 import { useAddNewMembersMutation } from "./membersApi";
-import { FormTlt } from "../../components";
+import { ModalHeader } from "@/components";
+import { useSelector } from "react-redux";
 
-const AddNewMemberForm = ({ setMessage, setApiStatus }) => {
+const AddNewMemberForm = ({ setMessage }) => {
+    const { token } = useSelector((state) => state.authSlice);
     const [openModal, setOpenModal] = useState(false);
 
     const [error, setError] = useState(null);
-
     const [form] = Form.useForm();
     const [addNewMembers] = useAddNewMembersMutation();
     const onFinish = async (values) => {
         try {
-            const { data } = await addNewMembers(values);
+            console.log(values);
+            const { data, error: apiError } = await addNewMembers({
+                memberData: values,
+                token,
+            });
             if (data?.success) {
                 setMessage(data?.message);
                 closeModal();
-                setApiStatus(true);
             } else {
-                setError(data?.message);
-                setApiStatus(false);
+                setError(apiError?.data || apiError?.error);
             }
         } catch (error) {
             throw new Error(error);
         }
     };
 
-    const onFinishFailed = (errorInfo) => {
-        console.log("Failed:", errorInfo);
-    };
-
     const closeModal = () => {
-        setOpenModal(false);
         form.resetFields();
+        setOpenModal(false);
     };
 
     return (
@@ -50,23 +49,21 @@ const AddNewMemberForm = ({ setMessage, setApiStatus }) => {
                 open={openModal}
                 onCancel={closeModal}
                 footer={null}
-                style={{ minWidth: "550px", width: "100%" }}
+                width={480}
+                className="form-modal"
+                closeIcon={false}
             >
+                <ModalHeader title={"Add New Member"} event={closeModal} />
+
                 <Form
                     form={form}
+                    layout="vertical"
                     labelCol={{
-                        span: 8,
                         style: {
                             textAlign: "left",
-                            fontFamily: ["Montserrat", "sans-serif"],
                         },
                     }}
-                    style={{
-                        width: "100%",
-                        padding: "12px",
-                    }}
                     onFinish={onFinish}
-                    onFinishFailed={onFinishFailed}
                 >
                     {error !== null ? (
                         <Alert
@@ -79,7 +76,6 @@ const AddNewMemberForm = ({ setMessage, setApiStatus }) => {
                         ""
                     )}
 
-                    <FormTlt title={"Add New Member"} />
                     <Form.Item
                         label="Name"
                         name="name"
@@ -113,7 +109,7 @@ const AddNewMemberForm = ({ setMessage, setApiStatus }) => {
                         className="submit-btn block ml-auto"
                         htmlType="submit"
                     >
-                        Submit
+                        Save
                     </Button>
                 </Form>
             </Modal>
