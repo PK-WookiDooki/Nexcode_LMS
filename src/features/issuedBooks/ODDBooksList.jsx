@@ -1,17 +1,17 @@
 import { Button, Table } from "antd";
 import { TableTlt } from "@/components";
-import { formatDateArray } from "../../core/functions/formatDateArray";
+import { formatDateArray } from "@/core/functions/formatDateArray";
 import { forwardRef, useEffect, useState } from "react";
 import { useAddOverdueBooksToCheckListMutation } from "./issuedBooksApi";
 import { useDispatch, useSelector } from "react-redux";
-import { scrollBackToTop } from "../../core/functions/scrollToTop";
-import { setIssuedMessage } from "./issuedSlice";
+import { scrollBackToTop } from "@/core/functions/scrollToTop";
+import {setAlert} from "@/core/global/context/notiSlice.js";
 
 const ODDBooksList = forwardRef(function ODDBooksList(
     { oddBooks, isISBLoading, isOODBLoading },
     ref
 ) {
-    //const { oddBooks, isISBLoading, isOODBLoading } = props;
+    const { token } = useSelector((state) => state.authSlice);
     const contactedList = oddBooks
         ?.filter((book) => book.checked === true)
         .map((book) => book.issuedBookId);
@@ -27,7 +27,6 @@ const ODDBooksList = forwardRef(function ODDBooksList(
             setSelectedRowKeys(selectableIds);
         }
     }, [oddBooks]);
-    const { token } = useSelector((state) => state.authSlice);
 
     const onSelectChange = (record) => {
         setSelectedRowKeys(record);
@@ -51,19 +50,19 @@ const ODDBooksList = forwardRef(function ODDBooksList(
                 token,
             });
             if (data?.success) {
-                setSelectedRowKeys([]);
                 scrollBackToTop();
+                setSelectedRowKeys([]);
                 dispatch(
-                    setIssuedMessage({
-                        msgType: true,
-                        msgContent: data?.message,
+                    setAlert({
+                        alertType: "success",
+                        alertMsg: data?.message,
                     })
                 );
             } else {
                 dispatch(
-                    setIssuedMessage({
-                        msgType: false,
-                        msgContent: error?.data?.message || error?.error,
+                    setAlert({
+                        alertType: "error",
+                        alertMsg: error?.data?.message || error?.error,
                     })
                 );
             }

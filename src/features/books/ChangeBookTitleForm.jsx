@@ -1,18 +1,21 @@
 import { Input, Modal, Form, Alert } from "antd";
 import { useEffect, useState } from "react";
 import { ModalHeader, FormSubmitBtn } from "@/components";
-import { useUpdateBooksMutation } from "./booksApi";
-import { MdOutlineEdit } from "react-icons/md";
-import { useSelector } from "react-redux";
-import { scrollBackToTop } from "../../core/functions/scrollToTop";
+import { useUpdateBookTitleMutation } from "./booksApi";
+import { MdOutlineBorderColor} from "react-icons/md";
+import {useDispatch, useSelector} from "react-redux";
+import { scrollBackToTop } from "@/core/functions/scrollToTop";
+import {setAlert} from "@/core/global/context/notiSlice.js";
 
-const ChangeBookTitleForm = ({ setMessage, book }) => {
+const ChangeBookTitleForm = ({ book }) => {
     const { token } = useSelector((state) => state.authSlice);
     const [error, setError] = useState(null);
     const [openModal, setOpenModal] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false)
+
+    const dispatch = useDispatch()
 
     const [form] = Form.useForm();
-    const [updateBooks] = useUpdateBooksMutation();
 
     useEffect(() => {
         if (book) {
@@ -20,17 +23,25 @@ const ChangeBookTitleForm = ({ setMessage, book }) => {
         }
     }, [openModal]);
 
-    const updateBookTitle = async (values) => {
+    const [updateBookTitle] = useUpdateBookTitleMutation();
+    const onFormSubmit = async (values) => {
         try {
+            setIsSubmitting(true)
             const bookData = { id: book?.id, title: values.title };
-            const { data, error: apiError } = await updateBooks({
+            const { data, error: apiError } = await updateBookTitle({
                 bookData,
                 token,
             });
             if (data?.success) {
-                setMessage(data?.message);
+                dispatch(
+                    setAlert({
+                        alertType: "success",
+                        alertMsg: data?.message,
+                    })
+                );
                 closeModal();
             } else {
+                setIsSubmitting(false)
                 setError(apiError?.data?.message || apiError?.error);
             }
         } catch (error) {
@@ -51,7 +62,7 @@ const ChangeBookTitleForm = ({ setMessage, book }) => {
                 className="text-lg text-darkBlue outline-none border-none"
                 onClick={() => setOpenModal(true)}
             >
-                <MdOutlineEdit />
+                <MdOutlineBorderColor/>
             </button>
             <Modal
                 centered
@@ -66,7 +77,7 @@ const ChangeBookTitleForm = ({ setMessage, book }) => {
 
                 <Form
                     form={form}
-                    onFinish={updateBookTitle}
+                    onFinish={onFormSubmit}
                     layout="vertical"
                     labelCol={{
                         style: {
@@ -96,7 +107,7 @@ const ChangeBookTitleForm = ({ setMessage, book }) => {
                     >
                         <Input placeholder="Enter book title . . ." />
                     </Form.Item>
-                    <FormSubmitBtn label={"Save"} />
+                    <FormSubmitBtn label={"Save"} isSubmitting={isSubmitting} />
                 </Form>
             </Modal>
         </section>

@@ -1,5 +1,5 @@
 import { Alert, Button, Form, InputNumber, Modal } from "antd";
-import { MdOutlineEdit } from "react-icons/md";
+import {MdOutlineBorderColor} from "react-icons/md";
 import { ModalHeader } from "@/components";
 
 const SettingCard = ({
@@ -20,9 +20,9 @@ const SettingCard = ({
                 </h2>
                 <button
                     onClick={() => setOpenModal(true)}
-                    className=" text-darkBlue outline-none"
+                    className=" text-darkBlue outline-none text-xl"
                 >
-                    <MdOutlineEdit />
+                    <MdOutlineBorderColor />
                 </button>
             </div>
             <Modal

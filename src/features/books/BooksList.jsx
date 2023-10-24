@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { useDeleteBooksMutation, useGetAllBooksQuery } from "./booksApi";
 import { Alert, Space, Table } from "antd";
 import AddNewBookForm from "./AddNewBookForm";
-import { ConfirmBox, SearchForm, TableTlt, ActionBtn } from "@/components";
+import { ConfirmBox, SearchForm, TableTlt } from "@/components";
 import { useEffect, useState } from "react";
 import AddMoreBooksForm from "./AddMoreBooksForm";
 import ChangeBookTitleForm from "./ChangeBookTitleForm";
@@ -15,7 +15,6 @@ const BooksList = () => {
         useGetAllBooksQuery(token);
     const books = booksData;
 
-    const [message, setMessage] = useState(null);
     const [search, setSearch] = useState("");
     const [searchedBooks, setSearchedBooks] = useState([]);
     const [addedCPBooks, setAddedCPBooks] = useState([]);
@@ -30,18 +29,6 @@ const BooksList = () => {
     }, [search]);
 
     const [deleteBooks] = useDeleteBooksMutation();
-
-    //fake Data
-    const fakeData = [
-        {
-            id: 1,
-            title: "The Law of Human Nature",
-            totalBooks: 3,
-            leftoverBooks: 2,
-            totalIssuedBooks: 1,
-            damagedBooks: 0,
-        },
-    ];
 
     const columns = [
         {
@@ -60,7 +47,7 @@ const BooksList = () => {
                     >
                         {book?.title}
                     </Link>
-                    <ChangeBookTitleForm book={book} setMessage={setMessage} />
+                    <ChangeBookTitleForm book={book} />
                 </div>
             ),
         },
@@ -96,12 +83,10 @@ const BooksList = () => {
                 <Space size="middle">
                     <AddMoreBooksForm
                         bookId={book?.id}
-                        setMessage={setMessage}
                         setAddedCPBooks={setAddedCPBooks}
                     />
                     <ConfirmBox
                         event={() => deleteBooks({ id: book?.id, token })}
-                        setMessage={setMessage}
                     />
                 </Space>
             ),
@@ -110,20 +95,16 @@ const BooksList = () => {
 
     return (
         <section className="px-10">
-            {message ? (
-                <Alert
-                    message={message}
-                    type={"success"}
-                    showIcon
-                    className="mb-11"
-                />
-            ) : (
-                ""
-            )}
+                {addedCPBooks?.length > 0 ? (
+            <div className="mb-5">
+                    <AddedCopiedBooksList copiedBooks={addedCPBooks} />
+            </div>
+                ) : (
+                    ""
+                )}
             <div className="flex items-center gap-6 mb-11 ">
                 <TableTlt title={"Books List"} />
                 <AddNewBookForm
-                    setMessage={setMessage}
                     setAddedCPBooks={setAddedCPBooks}
                 />
             </div>
@@ -133,13 +114,7 @@ const BooksList = () => {
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder={"Search by Book ID / Title"}
             />
-            <div className="my-3">
-                {addedCPBooks?.length > 0 ? (
-                    <AddedCopiedBooksList copiedBooks={addedCPBooks} />
-                ) : (
-                    ""
-                )}
-
+            <div className={`mt-6`} >
                 <Table
                     bordered
                     columns={columns}

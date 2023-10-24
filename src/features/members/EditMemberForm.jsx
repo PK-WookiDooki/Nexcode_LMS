@@ -1,17 +1,18 @@
-import { Alert, Button, Form, Input, Modal } from "antd";
+import { Alert, Form, Input, Modal } from "antd";
 import { useEffect, useState } from "react";
 import { useUpdateMembersMutation } from "./membersApi";
-import { ModalHeader } from "@/components";
-import { useSelector } from "react-redux";
-import { ActionBtn } from "@/components";
+import {FormSubmitBtn, ModalHeader, ActionBtn} from "@/components";
+import {useDispatch, useSelector} from "react-redux";
+import {setAlert} from "@/core/global/context/notiSlice.js";
 
-const EditMemberForm = ({ setMessage, member }) => {
+const EditMemberForm = ({ member }) => {
     const { token } = useSelector((state) => state.authSlice);
     const [openModal, setOpenModal] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false)
     const [error, setError] = useState(null);
     const [form] = Form.useForm();
 
-    const [isSubmitting, setIsSubmitting] = useState(false);
+    const dispatch = useDispatch()
 
     useEffect(() => {
         if (member) {
@@ -31,9 +32,8 @@ const EditMemberForm = ({ setMessage, member }) => {
                 token,
             });
             if (data?.success) {
-                setMessage(data?.message);
+                dispatch(setAlert({alertType: "success", alertMsg: data?.message}))
                 closeModal();
-                setIsSubmitting(false);
             } else {
                 setError(apiError?.data?.message || apiError?.error);
                 setIsSubmitting(false);
@@ -113,14 +113,7 @@ const EditMemberForm = ({ setMessage, member }) => {
                     <Form.Item label="Address" name="address">
                         <Input />
                     </Form.Item>
-
-                    <Button
-                        type="primary"
-                        className="submit-btn block ml-auto"
-                        htmlType="submit"
-                    >
-                        Submit
-                    </Button>
+                    <FormSubmitBtn label={"Save"} isSubmitting={isSubmitting} />
                 </Form>
             </Modal>
         </section>

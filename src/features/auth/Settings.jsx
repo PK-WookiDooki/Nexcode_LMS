@@ -1,4 +1,4 @@
-import { useEffect, useState, useTransition } from "react";
+import { useState } from "react";
 import {
     useGetAllSettingsQuery,
     useUpdateRentableBookLimitMutation,
@@ -7,16 +7,17 @@ import {
     useUpdateExtendableTimesMutation,
 } from "./authApi";
 import SettingCard from "./SettingCard";
-import { Alert } from "antd";
+import {setAlert} from "@/core/global/context/notiSlice.js";
 import { TableTlt } from "@/components";
-import { useSelector } from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 
 const Settings = () => {
     const { token } = useSelector((state) => state.authSlice);
     const { data } = useGetAllSettingsQuery(token);
     const adminData = data;
-    const [message, setMessage] = useState(null);
     const [error, setError] = useState(null);
+
+    const dispatch = useDispatch()
 
     //modals
     const [openModal1, setOpenModal1] = useState(false);
@@ -39,7 +40,7 @@ const Settings = () => {
                 token,
             });
             if (data?.success) {
-                setMessage(data?.message);
+                dispatch(setAlert({alertType: "success", alertMsg : data?.message}))
                 setOpenModal1(false);
             } else {
                 setError(apiError?.data?.message || apiError?.error);
@@ -57,7 +58,7 @@ const Settings = () => {
                 token,
             });
             if (data?.success) {
-                setMessage(data?.message);
+                dispatch(setAlert({alertType: "success", alertMsg : data?.message}))
                 setOpenModal2(false);
             } else {
                 setError(apiError?.data?.message || apiError?.error);
@@ -76,7 +77,7 @@ const Settings = () => {
                 token,
             });
             if (data?.success) {
-                setMessage(data?.message);
+                dispatch(setAlert({alertType: "success", alertMsg : data?.message}))
                 setOpenModal3(false);
             } else {
                 setError(apiError?.data?.message || apiError?.error);
@@ -94,7 +95,7 @@ const Settings = () => {
                 token,
             });
             if (data?.success) {
-                setMessage(data?.message);
+                dispatch(setAlert({alertType: "success", alertMsg : data?.message}))
                 setOpenModal4(false);
             } else {
                 setError(apiError?.data?.message || apiError?.error);
@@ -107,16 +108,6 @@ const Settings = () => {
     return (
         <section className="text-black">
             <div className="px-10 mb-11">
-                {message !== null ? (
-                    <Alert
-                        message={message}
-                        type={"success"}
-                        showIcon
-                        className="mb-11"
-                    />
-                ) : (
-                    ""
-                )}
                 <TableTlt title={"Settings"} />
             </div>
 
@@ -126,8 +117,8 @@ const Settings = () => {
                     currentValue={adminData?.bookLimit}
                     event={changeBooksLimit}
                     name={"bookLimit"}
-                    open={openModal1}
                     error={error}
+                    open={openModal1}
                     setOpenModal={setOpenModal1}
                 />
 
@@ -136,8 +127,8 @@ const Settings = () => {
                     currentValue={adminData?.rentableDays}
                     event={changeBookRentableDays}
                     name={"rentableDays"}
-                    open={openModal2}
                     error={error}
+                    open={openModal2}
                     setOpenModal={setOpenModal2}
                 />
 
@@ -146,8 +137,8 @@ const Settings = () => {
                     currentValue={adminData?.extendableTimes}
                     event={changeExtendableTimes}
                     name={"extendableTimes"}
-                    open={openModal3}
                     error={error}
+                    open={openModal3}
                     setOpenModal={setOpenModal3}
                 />
 
@@ -156,8 +147,8 @@ const Settings = () => {
                     currentValue={adminData?.extendableDays}
                     event={changeExtendableDays}
                     name={"extendableDays"}
-                    open={openModal4}
                     error={error}
+                    open={openModal4}
                     setOpenModal={setOpenModal4}
                 />
             </section>

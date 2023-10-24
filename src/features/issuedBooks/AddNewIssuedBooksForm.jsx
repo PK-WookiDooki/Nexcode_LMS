@@ -6,7 +6,7 @@ import { ModalHeader, FormSubmitBtn } from "@/components";
 import dayjs from "dayjs";
 import { useDispatch, useSelector } from "react-redux";
 import { scrollBackToTop } from "@/core/functions/scrollToTop";
-import { setIssuedMessage } from "./issuedSlice";
+import {setAlert} from "@/core/global/context/notiSlice.js";
 
 const AddNewIssuedBookForm = () => {
     const [openModal, setOpenModal] = useState(false);
@@ -48,13 +48,13 @@ const AddNewIssuedBookForm = () => {
                 issuedBookData,
                 token,
             });
-            console.log(data);
+            // console.log(data);
             if (data?.success) {
                 setIsSubmitting(false);
                 dispatch(
-                    setIssuedMessage({
-                        msgType: true,
-                        msgContent: data?.message,
+                    setAlert({
+                        alertType: "success",
+                        alertMsg: data?.message,
                     })
                 );
                 closeModal();

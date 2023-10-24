@@ -1,27 +1,33 @@
 import { Alert, Button, Form, Input, Modal } from "antd";
 import { useState } from "react";
 import { useAddNewMembersMutation } from "./membersApi";
-import { ModalHeader } from "@/components";
-import { useSelector } from "react-redux";
+import {FormSubmitBtn, ModalHeader} from "@/components";
+import {useDispatch, useSelector} from "react-redux";
+import {setAlert} from "@/core/global/context/notiSlice.js";
 
-const AddNewMemberForm = ({ setMessage }) => {
+const AddNewMemberForm = () => {
     const { token } = useSelector((state) => state.authSlice);
     const [openModal, setOpenModal] = useState(false);
 
     const [error, setError] = useState(null);
     const [form] = Form.useForm();
+    const [isSubmitting, setIsSubmitting] = useState(false)
+
+    const dispatch = useDispatch()
+
     const [addNewMembers] = useAddNewMembersMutation();
     const onFinish = async (values) => {
         try {
-            console.log(values);
+            setIsSubmitting(true)
             const { data, error: apiError } = await addNewMembers({
                 memberData: values,
                 token,
             });
             if (data?.success) {
-                setMessage(data?.message);
+                dispatch(setAlert({alertType: "success", alertMsg : data?.message}))
                 closeModal();
             } else {
+                setIsSubmitting(false)
                 setError(apiError?.data || apiError?.error);
             }
         } catch (error) {
@@ -103,14 +109,7 @@ const AddNewMemberForm = ({ setMessage }) => {
                     <Form.Item label="Address" name="address">
                         <Input />
                     </Form.Item>
-
-                    <Button
-                        type="primary"
-                        className="submit-btn block ml-auto"
-                        htmlType="submit"
-                    >
-                        Save
-                    </Button>
+                    <FormSubmitBtn label={"Save"} isSubmitting={isSubmitting} />
                 </Form>
             </Modal>
         </section>

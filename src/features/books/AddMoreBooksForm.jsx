@@ -1,20 +1,21 @@
 import { Modal, Form, InputNumber } from "antd";
 import { useEffect, useState } from "react";
 import { useAddMoreBooksMutation } from "./booksApi";
-import { useSelector } from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import { ActionBtn, ModalHeader, FormSubmitBtn } from "@/components";
-import { scrollBackToTop } from "../../core/functions/scrollToTop";
+import { scrollBackToTop } from "@/core/functions/scrollToTop";
+import {setAlert} from "@/core/global/context/notiSlice.js";
 
 const AddMoreBooksForm = ({
     bookId,
-    setMessage,
     setAddedCPBooks,
 }) => {
     const { token } = useSelector((state) => state.authSlice);
     const [error, setError] = useState("");
     const [openModal, setOpenModal] = useState(false);
     const [form] = Form.useForm();
-    const [addMoreBooks] = useAddMoreBooksMutation();
+    const [isSubmitting, setIsSubmitting] = useState(false)
+    const dispatch = useDispatch()
 
     useEffect(() => {
         if (error?.trim().length > 0) {
@@ -24,18 +25,26 @@ const AddMoreBooksForm = ({
         }
     }, [error]);
 
+    const [addMoreBooks] = useAddMoreBooksMutation();
     const updateBookAmount = async (values) => {
         try {
+            setIsSubmitting(true)
             const bookData = { id: bookId, totalBooks: values.amount };
             const { data, error: apiError } = await addMoreBooks({
                 bookData,
                 token,
             });
             if (data?.apiResponse?.success) {
-                setMessage(data?.apiResponse?.message);
+                dispatch(
+                    setAlert({
+                        alertType: "success",
+                        alertMsg: data?.apiResponse.message,
+                    })
+                );
                 setAddedCPBooks(data?.copiedBooks);
                 closeModal();
             } else {
+                setIsSubmitting(false)
                 setError(apiError?.data?.message || apiError?.error);
             }
         } catch (error) {
@@ -103,7 +112,7 @@ const AddMoreBooksForm = ({
                             className="!w-full !h-10 flex flex-col justify-center"
                         />
                     </Form.Item>
-                    <FormSubmitBtn label={"Save"} />
+                    <FormSubmitBtn label={"Save"} isSubmitting={isSubmitting} />
                 </Form>
             </Modal>
         </section>

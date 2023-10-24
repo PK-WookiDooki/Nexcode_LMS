@@ -3,8 +3,8 @@ import { useRenewIssuedBooksMutation } from "./issuedBooksApi";
 import { Alert, Button, Modal } from "antd";
 import { BsExclamationCircle } from "react-icons/bs";
 import { useDispatch, useSelector } from "react-redux";
-import { scrollBackToTop } from "../../core/functions/scrollToTop";
-import { setIssuedMessage } from "./issuedSlice";
+import { scrollBackToTop } from "@/core/functions/scrollToTop";
+import {setAlert} from "@/core/global/context/notiSlice.js";
 
 const RenewIssuedBooks = ({ issuedBookIds, setSelectedRowKeys }) => {
     const { token } = useSelector((state) => state.authSlice);
@@ -31,16 +31,15 @@ const RenewIssuedBooks = ({ issuedBookIds, setSelectedRowKeys }) => {
             });
 
             if (data?.success) {
-                setIsSubmitting(true);
                 dispatch(
-                    setIssuedMessage({
-                        msgType: true,
-                        msgContent: data?.message,
+                    setAlert({
+                        alertType: "success",
+                        alertMsg: data?.message,
                     })
                 );
                 closeModal();
             } else {
-                setIsSubmitting(true);
+                setIsSubmitting(false);
                 setError(apiError?.data?.message || apiError?.error);
             }
         } catch (error) {

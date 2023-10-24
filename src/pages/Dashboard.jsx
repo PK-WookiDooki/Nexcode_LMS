@@ -1,24 +1,20 @@
 import { useEffect, useRef, useState } from "react";
-import { IssuedBooks, ODDBooks } from "@/features";
-import { useGetAllBooksQuery } from "@/features/books/booksApi";
-import { useGetAllIssuedRecordsByFilterQuery } from "@/features/issuedBooks/issuedBooksApi";
-import { useGetAllMembersQuery } from "@/features/members/membersApi";
-import { StatisticCard } from "@/components";
-import { useDispatch, useSelector } from "react-redux";
+import { IssuedBooks, ODDBooks } from "@/features/index.js";
+import { useGetAllBooksQuery } from "@/features/books/booksApi.js";
+import { useGetAllIssuedRecordsByFilterQuery } from "@/features/issuedBooks/issuedBooksApi.js";
+import { useGetAllMembersQuery } from "@/features/members/membersApi.js";
+import { StatisticCard } from "@/components/index.js";
 import dayjs from "dayjs";
 import {
     useGetAllOverdueBooksQuery,
     useGetTotalIssuedBooksQuery,
-} from "../../features/issuedBooks/issuedBooksApi";
-import { Alert } from "antd";
-import { useLocation } from "react-router-dom";
-import { setIssuedMessage } from "../../features/issuedBooks/issuedSlice";
+} from "../features/issuedBooks/issuedBooksApi.js";
+import {useSelector} from "react-redux";
 
-const Home = () => {
+const Dashboard = () => {
     const { token } = useSelector((state) => state.authSlice);
     const [date, setDate] = useState(dayjs());
 
-    const { issuedMessage } = useSelector((state) => state.issuedSlice);
 
     const { data: issuedBooksData, isLoading: isISBLoading } =
         useGetAllIssuedRecordsByFilterQuery({
@@ -45,43 +41,17 @@ const Home = () => {
 
     const ref = useRef();
 
-    const location = useLocation().pathname;
-    const dispatch = useDispatch();
-
     useEffect(() => {
-        if (location) {
-            dispatch(setIssuedMessage({ msgType: null, msgContent: null }));
-        }
-    }, [location]);
-
-    useEffect(() => {
-        const scrollTo = () => {
-            if (ref.current /* + other conditions */) {
-                ref.current.scrollIntoView({
-                    behavior: "smooth",
-                    block: "start",
-                });
-            }
-        };
-
         if (window.location.href.includes("#odb")) {
-            scrollTo();
+            ref.current.scrollIntoView({
+                behavior: "smooth",
+                block: "start"
+            });
         }
-    }, [ref, window.location.href]);
+    }, [ ref, window.location.href]);
 
     return (
         <section className="flex flex-col gap-11">
-            {issuedMessage.msgType && issuedMessage.msgContent ? (
-                <div className="px-10">
-                    <Alert
-                        message={issuedMessage.msgContent}
-                        type="success"
-                        showIcon
-                    />
-                </div>
-            ) : (
-                ""
-            )}
 
             <div className="grid grid-cols-4 px-10 justify-items-center gap-10 ">
                 <StatisticCard
@@ -123,4 +93,4 @@ const Home = () => {
     );
 };
 
-export default Home;
+export default Dashboard;

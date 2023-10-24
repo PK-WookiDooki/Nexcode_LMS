@@ -7,13 +7,21 @@ export const notiSlice = createSlice({
             msgType: null,
             msgContent: null,
         },
+        alert : {
+            alertType : null,
+            alertMsg : null
+        }
     },
     reducers: {
         setMessage: (state, { payload }) => {
             state.message = payload;
         },
+
+        setAlert : (state, {payload}) => {
+            state.alert = payload
+        }
     },
 });
 
-export const { setMessage } = notiSlice.actions;
+export const { setMessage, setAlert } = notiSlice.actions;
 export default notiSlice.reducer;

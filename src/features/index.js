@@ -5,7 +5,6 @@ export { default as Books } from "./books/BooksList";
 export { default as Members } from "./members/MembersList";
 
 //copiedBooks
-export { default as CopiedBooks } from "./copiedBooks/CopiedBooksList";
 export { default as CopiedBooksByOrgBookId } from "./copiedBooks/CopiedBooksListByOrgBookId";
 
 //issuedBooks

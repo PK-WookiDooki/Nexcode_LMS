@@ -17,7 +17,6 @@ const MembersList = () => {
 
     const [searchedMembers, setSearchMembers] = useState([]);
 
-    const [message, setMessage] = useState(null);
 
     useEffect(() => {
         const filteredMembers = members?.filter(
@@ -74,10 +73,9 @@ const MembersList = () => {
             key: "action",
             render: (_, member) => (
                 <Space size="middle">
-                    <EditMemberForm setMessage={setMessage} member={member} />
+                    <EditMemberForm member={member} />
                     <ConfirmBox
                         event={() => deleteMembers({ id: member?.id, token })}
-                        setMessage={setMessage}
                     />
                 </Space>
             ),
@@ -86,19 +84,9 @@ const MembersList = () => {
 
     return (
         <section className="px-10">
-            {message ? (
-                <Alert
-                    message={message}
-                    type={"success"}
-                    showIcon
-                    className="mb-11"
-                />
-            ) : (
-                ""
-            )}
             <div className="flex items-center gap-6 mb-11">
                 <TableTlt title={"Members List"} />
-                <AddNewMemberForm setMessage={setMessage} />
+                <AddNewMemberForm />
             </div>
             <div className="flex items-center gap-6 my-3">
                 <SearchForm

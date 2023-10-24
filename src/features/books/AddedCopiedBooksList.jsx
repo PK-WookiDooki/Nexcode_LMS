@@ -46,7 +46,7 @@ const AddedCopiedBooksList = ({ copiedBooks }) => {
                             book?.damaged ? "bg-red-600" : "bg-emerald-500"
                         }`}
                     ></span>
-                    {book?.damaged ? "Damaged" : "Available"}{" "}
+                    {book?.damaged ? "Damaged" : "Fine"}{" "}
                 </p>
             ),
         },

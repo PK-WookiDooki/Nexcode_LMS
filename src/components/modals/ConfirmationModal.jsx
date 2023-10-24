@@ -3,19 +3,24 @@ import { BsExclamationCircle } from "react-icons/bs";
 import { ActionBtn } from "..";
 import { useState } from "react";
 import "./confirmModal.css";
-import { scrollBackToTop } from "../../core/functions/scrollToTop";
+import { scrollBackToTop } from "@/core/functions/scrollToTop";
+import {setAlert} from "@/core/global/context/notiSlice.js";
+import {useDispatch} from "react-redux";
 
-const ConfirmationModal = ({ event, setMessage }) => {
+const ConfirmationModal = ({ event }) => {
     const [openModal, setOpenModal] = useState(false);
     const [error, setError] = useState(null);
+    const dispatch = useDispatch()
+    const [isSubmitting, setIsSubmitting] = useState(false)
 
     const onSubmit = async () => {
         try {
+            setIsSubmitting(true)
             const { data, error: apiError } = await event();
-            console.log(apiError, data);
             if (data?.success) {
-                setMessage(data?.message);
+                dispatch(setAlert({alertType: "success", alertMsg: data?.message}));
             } else {
+                setIsSubmitting(false)
                 setError(apiError?.data?.message || apiError?.error);
             }
         } catch (error) {
@@ -44,6 +49,7 @@ const ConfirmationModal = ({ event, setMessage }) => {
                 okButtonProps={{
                     type: "primary",
                     className: "delete-btn",
+                    loading: isSubmitting,
                 }}
                 cancelButtonProps={{
                     type: "default",

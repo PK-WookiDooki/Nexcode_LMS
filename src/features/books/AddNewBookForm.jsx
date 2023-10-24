@@ -2,15 +2,18 @@ import { Button, Form, Input, InputNumber, Modal } from "antd";
 import { useEffect, useState } from "react";
 import { useAddNewBooksMutation } from "./booksApi";
 import { ModalHeader, FormSubmitBtn } from "@/components";
-import { useSelector } from "react-redux";
-const AddNewBookForm = ({ setMessage, setAddedCPBooks }) => {
+import {useDispatch, useSelector} from "react-redux";
+import {setAlert} from "@/core/global/context/notiSlice.js";
+const AddNewBookForm = ({  setAddedCPBooks }) => {
     const { token } = useSelector((state) => state.authSlice);
 
     const [form] = Form.useForm();
     const [openModal, setOpenModal] = useState(false);
     const [error, setError] = useState(null);
+    const [isSubmitting, setIsSubmitting] = useState(false)
 
-    const [addNewBooks] = useAddNewBooksMutation();
+    const dispatch = useDispatch()
+
 
     useEffect(() => {
         if (error !== null) {
@@ -20,18 +23,26 @@ const AddNewBookForm = ({ setMessage, setAddedCPBooks }) => {
         }
     }, [error]);
 
+    const [addNewBooks] = useAddNewBooksMutation();
     const onFinish = async (values) => {
         try {
+            setIsSubmitting(true)
             const { data, error: apiError } = await addNewBooks({
                 bookData: values,
                 token,
             });
 
             if (data?.apiResponse.success) {
-                setMessage(data?.message);
+                dispatch(
+                    setAlert({
+                        alertType: "success",
+                        alertMsg: data?.apiResponse.message,
+                    })
+                );
                 closeModal();
                 setAddedCPBooks(data?.copiedBooks);
             } else {
+                setIsSubmitting(false)
                 setError(apiError?.data?.message || apiError?.error);
             }
         } catch (error) {
@@ -111,7 +122,7 @@ const AddNewBookForm = ({ setMessage, setAddedCPBooks }) => {
                         <InputNumber className="!h-10 !w-full flex flex-col justify-center" />
                     </Form.Item>
 
-                    <FormSubmitBtn label={"Save"} />
+                    <FormSubmitBtn label={"Save"} isSubmitting={isSubmitting} />
                 </Form>
             </Modal>
         </section>

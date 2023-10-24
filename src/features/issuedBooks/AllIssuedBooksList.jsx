@@ -24,18 +24,8 @@ const IssuedBooksList = () => {
         });
     const issuedBooks = data;
 
-    const { issuedMessage } = useSelector((state) => state.issuedSlice);
-
-    const checkedIds = issuedBooks
-        ?.filter((book) => book?.is_borrowed === 0)
-        .map((row) => row.id);
-
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
 
-    //for renewing & returning issued books
-    const selectableIds = selectedRowKeys?.filter(
-        (key) => !checkedIds.includes(key)
-    );
 
     const rowSelection = {
         selectedRowKeys,
@@ -114,17 +104,6 @@ const IssuedBooksList = () => {
 
     return (
         <section className="px-10">
-            {issuedMessage.msgType && issuedMessage.msgContent ? (
-                <Alert
-                    message={issuedMessage.msgContent}
-                    type="success"
-                    showIcon
-                    className="mb-11"
-                />
-            ) : (
-                ""
-            )}
-
             <div className="flex items-center gap-6 mb-11">
                 <TableTlt title={"Issued Books List"} />
                 <AddNewIssuedBookForm />

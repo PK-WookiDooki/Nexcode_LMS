@@ -1,4 +1,4 @@
-import { Alert, Table } from "antd";
+import {Table} from "antd"
 import { TableTlt } from "@/components";
 import { useGetCopiedBooksByOrgIdQuery } from "./copiedBooksApi";
 import { useState } from "react";
@@ -14,8 +14,6 @@ const CopiedBooksList = () => {
         token,
     });
     const copiedBooks = data;
-    const [message, setMessage] = useState(null);
-
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
     const rowSelection = {
         selectedRowKeys,
@@ -90,17 +88,6 @@ const CopiedBooksList = () => {
 
     return (
         <section className="px-10">
-            {" "}
-            {message ? (
-                <Alert
-                    message={message}
-                    type="success"
-                    showIcon
-                    className="mb-3"
-                />
-            ) : (
-                ""
-            )}
             <Link
                 to={".."}
                 className="flex items-center gap-3 text-black hover:text-black/80 duration-200 w-fit"
@@ -113,7 +100,6 @@ const CopiedBooksList = () => {
                 <SetDamagedBooks
                     generatedIds={selectedRowKeys}
                     setSelectedRowKeys={setSelectedRowKeys}
-                    setMessage={setMessage}
                 />
             </div>
             <Table

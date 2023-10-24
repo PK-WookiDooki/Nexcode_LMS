@@ -1,11 +1,11 @@
-import { Alert, Form, Input } from "antd";
+import { Form, Input } from "antd";
 import { FormTlt, FormSubmitBtn } from "@/components";
 import { useResetPasswordMutation } from "./authApi";
 import imgBg from "@/assets/imgs/img_login.png";
 import { MdOutlineLocalLibrary } from "react-icons/md";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { setMessage } from "../../core/global/context/notiSlice";
+import { setMessage } from "@/core/global/context/notiSlice";
 import { useState } from "react";
 
 const ResetPasswordForm = () => {
@@ -13,15 +13,14 @@ const ResetPasswordForm = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const nav = useNavigate();
     const dispatch = useDispatch();
-    const [resetPassword] = useResetPasswordMutation();
 
+    const [resetPassword] = useResetPasswordMutation();
     const onFinish = async (values) => {
         try {
             setIsSubmitting(true);
             const username = values.username;
             const { data, error } = await resetPassword(username);
             if (data?.success) {
-                setIsSubmitting(false);
                 form.resetFields();
                 nav("/login", {
                     replace: true,

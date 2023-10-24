@@ -1,21 +1,21 @@
-import { Alert, Button, Form, Modal } from "antd";
+import { Alert, Form, Modal } from "antd";
 import { useEffect, useState } from "react";
 import { useChangePasswordMutation } from "./authApi";
 import Password from "antd/es/input/Password";
 import { useDispatch, useSelector } from "react-redux";
 import { removeCookies, setLoginStatus } from "./authSlice";
 import { useNavigate } from "react-router-dom";
-import { ModalHeader } from "@/components";
-import { FormSubmitBtn } from "../../components";
+import { ModalHeader, FormSubmitBtn } from "@/components";
+import {setMessage} from "@/core/global/context/notiSlice.js";
 
 const ChangePasswordForm = () => {
     const { token } = useSelector((state) => state.authSlice);
     const [openModal, setOpenModal] = useState(false);
     const [form] = Form.useForm();
     const [error, setError] = useState(null);
+    const [isSubmitting, setIsSubmitting] = useState(false)
 
     const [changePassword] = useChangePasswordMutation();
-    const { user } = useSelector((state) => state.authSlice);
     const dispatch = useDispatch();
     const nav = useNavigate();
 
@@ -29,9 +29,10 @@ const ChangePasswordForm = () => {
 
     const onFinish = async (values) => {
         try {
+            setIsSubmitting(true)
             const updatedPasswords = {
-                oldPassword: values.currentPassword,
-                newPassword: values.newPassword,
+                oldPassword: values?.currentPassword,
+                newPassword: values?.newPassword,
             };
             const { data, error: apiError } = await changePassword({
                 updatedPasswords,
@@ -44,11 +45,14 @@ const ChangePasswordForm = () => {
                 dispatch(
                     setLoginStatus({
                         user: null,
+
                         token: null,
                     })
                 );
+                dispatch(setMessage({msgType : "success", msgContent : data?.message}))
                 nav("/login");
             } else {
+                setIsSubmitting(false)
                 setError(apiError?.data?.message || apiError?.error);
             }
         } catch (error) {
@@ -168,6 +172,7 @@ const ChangePasswordForm = () => {
                         label={"Confirm"}
                         isFullWidth={true}
                         extraStyle={"mt-3"}
+                        isSubmitting={isSubmitting}
                     />
                 </Form>
             </Modal>

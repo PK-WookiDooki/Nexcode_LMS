@@ -1,14 +1,14 @@
-import { Alert, Form, Input, notification } from "antd";
+import { Alert, Form, Input } from "antd";
 import { useEffect, useState } from "react";
 import { useLoginAccountMutation } from "./authApi";
 import { useDispatch } from "react-redux";
 import { setLoginStatus } from "./authSlice";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import { FormTlt, FormSubmitBtn } from "@/components";
-import imgBg from "../../assets/imgs/img_login.png";
+import imgBg from "@/assets/imgs/img_login.png";
 import { MdOutlineLocalLibrary } from "react-icons/md";
-import { setMessage } from "../../core/global/context/notiSlice";
+import { setMessage } from "@/core/global/context/notiSlice";
 
 const Login = () => {
     const [error, setError] = useState(null);
@@ -29,14 +29,19 @@ const Login = () => {
 
     const onFinish = async (values) => {
         try {
-            setIsSubmitting(true);
+            // setIsSubmitting(true);
             const { data, error: apiError } = await loginAccount(values);
+            const tokenDuration = new Date(data?.expiredAt).getTime() - new Date(Date.now()).getTime()
+            const dayInMilliseconds = 24 * 60 * 60 * 1000;
+            const tokenExpiredTime = tokenDuration / dayInMilliseconds
+
             if (data?.accessToken) {
-                setIsSubmitting(false);
-                Cookies.set("token", data?.accessToken, { expires: 1 });
+                Cookies.set("token", data?.accessToken, { expires: tokenExpiredTime });
+                Cookies.set("username", values?.username);
                 dispatch(
                     setLoginStatus({
                         token: data?.accessToken,
+                        username : values.username
                     })
                 );
                 nav("/");

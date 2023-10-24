@@ -31,7 +31,7 @@ const SideBar = () => {
                 <CNavLink
                     title={"Books"}
                     path={"/books"}
-                    icon={<MdOutlineBook className="text-2xl" />}
+                    icon={<i className="material-symbols-outlined" >book_3</i>}
                 />
                 <CNavLink
                     title={"Members"}
@@ -39,7 +39,7 @@ const SideBar = () => {
                     icon={<MdDiversity3 className="text-2xl" />}
                 />
                 <CNavLink
-                    title={"Issued Records"}
+                    title={"Issued Books"}
                     path={"/issuedBooks"}
                     icon={<MdOutlineLibraryBooks className="text-2xl" />}
                 />

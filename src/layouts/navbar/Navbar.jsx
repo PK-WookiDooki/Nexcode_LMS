@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import {Link, useLocation} from "react-router-dom";
 import { useGetAllOverdueBooksQuery } from "@/features/issuedBooks/issuedBooksApi";
 import AccountMenu from "./AccountMenu";
 import { MdOutlineNotifications } from "react-icons/md";
@@ -8,16 +8,18 @@ const Navbar = () => {
     const { data } = useGetAllOverdueBooksQuery(token);
     const totalOverdueBooks = data?.length;
 
-    //const scrollToODB = () => {
-    //    document.getElementById("odb").scrollIntoView({ behavior: "smooth" });
-    //};
+    const location = useLocation().pathname;
+    const scrollIntoView = () => {
+        document.getElementById("odb").scrollIntoView({behavior: "smooth"})
+    }
 
     return (
         <header className=" sticky top-0 shadow-sm z-10 bg-white ">
             <nav className="flex items-center justify-end gap-5 p-4 py-6 ">
                 <Link
                     to="/#odb"
-                    //onClick={scrollToODB}
+                    onClick={location === "/" ? scrollIntoView : null
+                }
                     className="text-2xl duration-200 relative"
                 >
                     {" "}

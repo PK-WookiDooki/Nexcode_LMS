@@ -3,8 +3,8 @@ import { useReturnIssuedBooksMutation } from "./issuedBooksApi";
 import { Alert, Button, Modal } from "antd";
 import { BsExclamationCircle } from "react-icons/bs";
 import { useDispatch, useSelector } from "react-redux";
-import { scrollBackToTop } from "../../core/functions/scrollToTop";
-import { setIssuedMessage } from "./issuedSlice";
+import { scrollBackToTop } from "@/core/functions/scrollToTop";
+import {setAlert} from "@/core/global/context/notiSlice.js";
 
 const ReturnIssuedBooks = ({ issuedBookIds, setSelectedRowKeys }) => {
     const { token } = useSelector((state) => state.authSlice);
@@ -33,9 +33,9 @@ const ReturnIssuedBooks = ({ issuedBookIds, setSelectedRowKeys }) => {
             if (data?.success) {
                 onModalClose();
                 dispatch(
-                    setIssuedMessage({
-                        msgType: true,
-                        msgContent: data?.message,
+                    setAlert({
+                        alertType: "success",
+                        alertMsg: data?.message,
                     })
                 );
             } else {
@@ -77,6 +77,7 @@ const ReturnIssuedBooks = ({ issuedBookIds, setSelectedRowKeys }) => {
                 }}
                 onOk={onReturnIssuedBooks}
                 className="confirm-box"
+                width={450}
             >
                 {error !== null ? (
                     <Alert
