@@ -25,6 +25,7 @@ const SetDamagedBooks = ({ generatedIds, setSelectedRowKeys }) => {
 
     const closeModal = () => {
         setOpenModal(false);
+        setIsSubmitting(false)
         setSelectedRowKeys([])
         scrollBackToTop()
     };

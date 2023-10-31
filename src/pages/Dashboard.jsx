@@ -19,7 +19,7 @@ const Dashboard = () => {
     const { data: issuedBooksData, isLoading: isISBLoading } =
         useGetAllIssuedRecordsByFilterQuery({
             keyword: "issued",
-            date: date.toISOString().slice(0, 7),
+            date: date.format("YYYY-MM"),
             token,
         });
 
@@ -50,6 +50,10 @@ const Dashboard = () => {
         }
     }, [ ref, window.location.href]);
 
+    const scrollIntoView = () => {
+        document.getElementById("odb").scrollIntoView({behavior: "smooth"})
+    }
+
     return (
         <section className="flex flex-col gap-11">
 
@@ -73,6 +77,7 @@ const Dashboard = () => {
                     title={"Total Overdue Books"}
                     count={overDueBooks?.length}
                     path={"#odb"}
+                    event={scrollIntoView}
                 />
             </div>
 

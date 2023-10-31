@@ -27,9 +27,9 @@ const ChangeBookTitleForm = ({ book }) => {
     const onFormSubmit = async (values) => {
         try {
             setIsSubmitting(true)
-            const bookData = { id: book?.id, title: values.title };
             const { data, error: apiError } = await updateBookTitle({
-                bookData,
+                title : values.title,
+                bookId : book?.id,
                 token,
             });
             if (data?.success) {
@@ -50,6 +50,7 @@ const ChangeBookTitleForm = ({ book }) => {
     };
 
     const closeModal = () => {
+        setIsSubmitting(false)
         form.setFieldValue("title", book?.title);
         scrollBackToTop();
         setOpenModal(false);

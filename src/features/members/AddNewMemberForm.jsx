@@ -37,6 +37,8 @@ const AddNewMemberForm = () => {
 
     const closeModal = () => {
         form.resetFields();
+        setError(null)
+        setIsSubmitting(false)
         setOpenModal(false);
     };
 
@@ -102,6 +104,11 @@ const AddNewMemberForm = () => {
                                 required: true,
                                 message: "Please enter phone number!",
                             },
+                            {
+                                // type: "regexp",
+                                pattern : /^(09)\d{9}$/,
+                                message : "Please enter valid phone number!"
+                            }
                         ]}
                     >
                         <Input />

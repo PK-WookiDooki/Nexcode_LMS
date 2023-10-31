@@ -1,9 +1,10 @@
 import { Link } from "react-router-dom";
 
-const DashboardCard = ({ title, count, path }) => {
+const DashboardCard = ({ title, count, path, event }) => {
     return (
         <Link
             to={path}
+            onClick={event}
             className="p-3 rounded-md bg-lightBlue font-medium shadow w-full hover:shadow-md duration-200 "
         >
             <p> {title} </p>

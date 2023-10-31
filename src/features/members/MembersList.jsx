@@ -1,10 +1,11 @@
 import { useDeleteMembersMutation, useGetAllMembersQuery } from "./membersApi";
-import { Alert, Select, Space, Table } from "antd";
+import { Select, Space, Table } from "antd";
 import AddNewMemberForm from "./AddNewMemberForm";
-import { ConfirmBox, SearchForm, TableTlt, ActionBtn } from "@/components";
+import { ConfirmBox, SearchForm, TableTlt } from "@/components";
 import { useEffect, useState } from "react";
 import EditMemberForm from "./EditMemberForm";
 import { useSelector } from "react-redux";
+import {formatPhoneNumber} from "@/core/functions/formatPhoneNumber.js";
 
 const MembersList = () => {
     const { token } = useSelector((state) => state.authSlice);
@@ -33,6 +34,8 @@ const MembersList = () => {
         setSearch("");
     };
 
+    // console.log(members)
+
     const [deleteMembers] = useDeleteMembersMutation();
     const columns = [
         {
@@ -54,6 +57,7 @@ const MembersList = () => {
             title: "Phone",
             dataIndex: "phone",
             key: "phone",
+            render: (_, member) => <p> {formatPhoneNumber(member?.phone)} </p>
         },
         {
             title: "Address",
@@ -73,7 +77,7 @@ const MembersList = () => {
             key: "action",
             render: (_, member) => (
                 <Space size="middle">
-                    <EditMemberForm member={member} />
+                    <EditMemberForm member={member} setSearch={setSearch} />
                     <ConfirmBox
                         event={() => deleteMembers({ id: member?.id, token })}
                     />
@@ -88,7 +92,7 @@ const MembersList = () => {
                 <TableTlt title={"Members List"} />
                 <AddNewMemberForm />
             </div>
-            <div className="flex items-center gap-6 my-3">
+            <div className="flex items-center gap-6 mb-6">
                 <SearchForm
                     search={search}
                     setSearch={setSearch}

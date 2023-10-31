@@ -1,4 +1,4 @@
-import { Alert, Button, Form, InputNumber, Modal } from "antd";
+import {Alert, Button, Form, InputNumber, Modal, Skeleton} from "antd";
 import {MdOutlineBorderColor} from "react-icons/md";
 import { ModalHeader } from "@/components";
 
@@ -10,7 +10,13 @@ const SettingCard = ({
     setOpenModal,
     name,
     error,
+    isLoading
 }) => {
+
+    if(isLoading){
+        return <Skeleton.Input active={true} className={" !h-16 !w-full "} />
+    }
+
     return (
         <section className="p-5 bg-[#D6E4FF]/30">
             <div className="flex items-center gap-5 ml-12">

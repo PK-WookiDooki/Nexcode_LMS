@@ -30,17 +30,16 @@ const AddNewBookForm = ({  setAddedCPBooks }) => {
             const { data, error: apiError } = await addNewBooks({
                 bookData: values,
                 token,
-            });
-
-            if (data?.apiResponse.success) {
+            })
+            if (data) {
                 dispatch(
                     setAlert({
                         alertType: "success",
-                        alertMsg: data?.apiResponse.message,
+                        alertMsg: "New book created successfully!",
                     })
                 );
+                setAddedCPBooks(data);
                 closeModal();
-                setAddedCPBooks(data?.copiedBooks);
             } else {
                 setIsSubmitting(false)
                 setError(apiError?.data?.message || apiError?.error);
@@ -53,6 +52,7 @@ const AddNewBookForm = ({  setAddedCPBooks }) => {
     const closeModal = () => {
         form.resetFields();
         setOpenModal(false);
+        setIsSubmitting(false)
     };
 
     return (
@@ -75,7 +75,7 @@ const AddNewBookForm = ({  setAddedCPBooks }) => {
             >
                 <ModalHeader
                     title={"Add New Book"}
-                    event={() => setOpenModal(false)}
+                    event={closeModal}
                 />
                 <Form
                     form={form}

@@ -29,19 +29,22 @@ const AddMoreBooksForm = ({
     const updateBookAmount = async (values) => {
         try {
             setIsSubmitting(true)
-            const bookData = { id: bookId, totalBooks: values.amount };
             const { data, error: apiError } = await addMoreBooks({
-                bookData,
+                totalBooks : values.amount,
+                bookId,
                 token,
             });
-            if (data?.apiResponse?.success) {
+
+
+
+            if (data) {
                 dispatch(
                     setAlert({
                         alertType: "success",
-                        alertMsg: data?.apiResponse.message,
+                        alertMsg: "New books added successfully!",
                     })
                 );
-                setAddedCPBooks(data?.copiedBooks);
+                setAddedCPBooks(data);
                 closeModal();
             } else {
                 setIsSubmitting(false)
@@ -53,6 +56,7 @@ const AddMoreBooksForm = ({
     };
 
     const closeModal = () => {
+        setIsSubmitting(false)
         form.resetFields();
         scrollBackToTop();
         setOpenModal(false);

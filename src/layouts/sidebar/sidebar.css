@@ -13,12 +13,12 @@
     @apply py-2 px-4 w-full duration-300 border-blue-700 relative flex items-center gap-2
   ;}
 
-  .nav-link::after{
-    @apply absolute w-0 h-full left-0 top-0 bg-primary content-[""] duration-300 -z-[1] ease-linear
-  ;}
+  /*.nav-link::after{*/
+  /*  @apply absolute w-0 h-full left-0 top-0 bg-primary content-[""] duration-300 -z-[1] ease-linear*/
+  /*;}*/
 
-  .nav-link:hover::after, .nav-link.active::after{
-    @apply w-full
+  .nav-link:hover, .nav-link.active{
+    @apply w-full bg-primary
   ;}
 
   .nav-link.active, .nav-link:hover{

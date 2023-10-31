@@ -61,6 +61,7 @@ const ChangePasswordForm = () => {
     };
 
     const closeModal = () => {
+        setIsSubmitting(false)
         form.resetFields();
         setOpenModal(false);
     };

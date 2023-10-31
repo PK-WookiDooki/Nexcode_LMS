@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { scrollBackToTop } from "@/core/functions/scrollToTop";
 import {setAlert} from "@/core/global/context/notiSlice.js";
 
-const ReturnIssuedBooks = ({ issuedBookIds, setSelectedRowKeys }) => {
+const ReturnIssuedBooks = ({ issuedBookIds, setSelectedRowKeys, setSearch }) => {
     const { token } = useSelector((state) => state.authSlice);
     const [returnIssuedBooks] = useReturnIssuedBooksMutation();
     const [error, setError] = useState(null);
@@ -35,9 +35,10 @@ const ReturnIssuedBooks = ({ issuedBookIds, setSelectedRowKeys }) => {
                 dispatch(
                     setAlert({
                         alertType: "success",
-                        alertMsg: data?.message,
+                        alertMsg: ` ${issuedBookIds?.length > 1 ? "Books" : "Book"} return successful!`,
                     })
                 );
+                setSearch("")
             } else {
                 setIsSubmitting(false);
                 setError(apiError?.data?.message || apiError?.error);

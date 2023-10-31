@@ -29,14 +29,14 @@ const Login = () => {
 
     const onFinish = async (values) => {
         try {
-            // setIsSubmitting(true);
+            setIsSubmitting(true);
             const { data, error: apiError } = await loginAccount(values);
             const tokenDuration = new Date(data?.expiredAt).getTime() - new Date(Date.now()).getTime()
             const dayInMilliseconds = 24 * 60 * 60 * 1000;
             const tokenExpiredTime = tokenDuration / dayInMilliseconds
 
             if (data?.accessToken) {
-                Cookies.set("token", data?.accessToken, { expires: tokenExpiredTime });
+                Cookies.set("lmsToken", data?.accessToken, { expires: tokenExpiredTime });
                 Cookies.set("username", values?.username);
                 dispatch(
                     setLoginStatus({

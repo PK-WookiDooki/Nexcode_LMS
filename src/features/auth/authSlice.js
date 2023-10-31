@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import Cookies from "js-cookie";
 
-const token = Cookies.get("token") ? Cookies.get("token") : null;
+const token = Cookies.get("lmsToken") ? Cookies.get("lmsToken") : null;
 const username = Cookies.get("username") ? Cookies.get("username") : null;
 
 export const authSlice = createSlice({
@@ -19,7 +19,7 @@ export const authSlice = createSlice({
 
         removeCookies: () => {
             Cookies.remove("username")
-            Cookies.remove("token");
+            Cookies.remove("lmsToken");
         },
     },
 });

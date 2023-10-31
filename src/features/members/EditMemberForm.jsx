@@ -5,7 +5,7 @@ import {FormSubmitBtn, ModalHeader, ActionBtn} from "@/components";
 import {useDispatch, useSelector} from "react-redux";
 import {setAlert} from "@/core/global/context/notiSlice.js";
 
-const EditMemberForm = ({ member }) => {
+const EditMemberForm = ({ member, setSearch }) => {
     const { token } = useSelector((state) => state.authSlice);
     const [openModal, setOpenModal] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false)
@@ -32,8 +32,9 @@ const EditMemberForm = ({ member }) => {
                 token,
             });
             if (data?.success) {
-                dispatch(setAlert({alertType: "success", alertMsg: data?.message}))
+                dispatch(setAlert({alertType: "success", alertMsg: "Member update successful!"}))
                 closeModal();
+                setSearch("")
             } else {
                 setError(apiError?.data?.message || apiError?.error);
                 setIsSubmitting(false);

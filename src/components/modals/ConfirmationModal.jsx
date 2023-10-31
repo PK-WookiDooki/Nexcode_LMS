@@ -18,6 +18,7 @@ const ConfirmationModal = ({ event }) => {
             setIsSubmitting(true)
             const { data, error: apiError } = await event();
             if (data?.success) {
+                closeModal()
                 dispatch(setAlert({alertType: "success", alertMsg: data?.message}));
             } else {
                 setIsSubmitting(false)
@@ -30,8 +31,9 @@ const ConfirmationModal = ({ event }) => {
 
     const closeModal = () => {
         setError(null);
-        setOpenModal(false);
         scrollBackToTop();
+        isSubmitting(false);
+        setOpenModal(false);
     };
 
     return (
@@ -70,9 +72,9 @@ const ConfirmationModal = ({ event }) => {
                 ) : (
                     ""
                 )}
-                <div className="flex flex-row items-center justify-center gap-2 pb-6">
+                <div className="flex flex-row items-center justify-center gap-4 pb-6">
                     <BsExclamationCircle className="text-xl text-yellow-500" />
-                    <h2 className="text-lg font-medium">
+                    <h2 className="font-medium text-base">
                         {" "}
                         Are you sure you want to delete this ?{" "}
                     </h2>

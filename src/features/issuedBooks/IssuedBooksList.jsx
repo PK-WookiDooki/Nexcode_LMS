@@ -1,4 +1,4 @@
-import { Alert, DatePicker, Table } from "antd";
+import { DatePicker, Table } from "antd";
 import { SearchForm, TableTlt } from "@/components";
 import AddNewIssuedBookForm from "./AddNewIssuedBooksForm";
 import { useEffect, useState } from "react";
@@ -116,16 +116,19 @@ const IssuedBooksList = ({
                         format={"MMMM YYYY"}
                         allowClear={false}
                         className=" !shadow-none "
+                        inputReadOnly={true}
                     />{" "}
                 </div>
                 <div className="flex gap-3">
                     <RenewIssuedBooks
                         issuedBookIds={selectedRowKeys}
                         setSelectedRowKeys={setSelectedRowKeys}
+                        setSearch={setSearch}
                     />
                     <ReturnIssuedBooks
                         issuedBookIds={selectedRowKeys}
                         setSelectedRowKeys={setSelectedRowKeys}
+                        setSearch={setSearch}
                     />
                 </div>
             </div>

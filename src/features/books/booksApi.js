@@ -23,21 +23,21 @@ export const booksApi = baseApi.injectEndpoints({
         }),
 
         updateBookTitle: builder.mutation({
-            query: ({ bookData, token }) => ({
-                url: `${endPoint}/book-title`,
+            query: ({ bookId, title, token }) => ({
+                url: `${endPoint}/book-title/${bookId}`,
                 method: "PUT",
                 headers: { Authorization: `Bearer ${token}` },
-                body: bookData,
+                body: {title},
             }),
             invalidatesTags: ["books", "copiedBooks", "issuedBooks"],
         }),
 
         addMoreBooks: builder.mutation({
-            query: ({ bookData, token }) => ({
-                url: `${endPoint}/book-amount`,
+            query: ({ bookId, totalBooks, token }) => ({
+                url: `${endPoint}/book-amount/${bookId}`,
                 method: "PUT",
                 headers: { Authorization: `Bearer ${token}` },
-                body: bookData,
+                body: {totalBooks},
             }),
             invalidatesTags: ["books", "copiedBooks"],
         }),

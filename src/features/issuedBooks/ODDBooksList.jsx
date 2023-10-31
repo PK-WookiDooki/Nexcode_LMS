@@ -6,6 +6,7 @@ import { useAddOverdueBooksToCheckListMutation } from "./issuedBooksApi";
 import { useDispatch, useSelector } from "react-redux";
 import { scrollBackToTop } from "@/core/functions/scrollToTop";
 import {setAlert} from "@/core/global/context/notiSlice.js";
+import {formatPhoneNumber} from "@/core/functions/formatPhoneNumber.js";
 
 const ODDBooksList = forwardRef(function ODDBooksList(
     { oddBooks, isISBLoading, isOODBLoading },
@@ -27,6 +28,8 @@ const ODDBooksList = forwardRef(function ODDBooksList(
             setSelectedRowKeys(selectableIds);
         }
     }, [oddBooks]);
+
+    console.log(oddBooks)
 
     const onSelectChange = (record) => {
         setSelectedRowKeys(record);
@@ -100,6 +103,7 @@ const ODDBooksList = forwardRef(function ODDBooksList(
             title: "Phone Number",
             dataIndex: "phone",
             key: "phone",
+            render: (_, book) => <p> {formatPhoneNumber(book?.phone)} </p>
         },
         {
             title: "Issued Date",

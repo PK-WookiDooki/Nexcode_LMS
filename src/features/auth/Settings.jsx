@@ -13,10 +13,9 @@ import {useDispatch, useSelector} from "react-redux";
 
 const Settings = () => {
     const { token } = useSelector((state) => state.authSlice);
-    const { data } = useGetAllSettingsQuery(token);
-    const adminData = data;
-    const [error, setError] = useState(null);
+    const { data : adminData, isLoading :isADLoading } = useGetAllSettingsQuery(token);
 
+    const [error, setError] = useState(null)
     const dispatch = useDispatch()
 
     //modals
@@ -34,7 +33,7 @@ const Settings = () => {
     //issued books limit
     const changeBooksLimit = async (values) => {
         try {
-            console.log(values);
+            // console.log(values);
             const { data, error: apiError } = await updateRentableBookLimit({
                 limit: values.bookLimit,
                 token,
@@ -71,7 +70,7 @@ const Settings = () => {
     //issued books extendable times
     const changeExtendableTimes = async (values) => {
         try {
-            console.log(values);
+            // console.log(values);
             const { data, error: apiError } = await updateExtendableTimes({
                 limit: values.extendableTimes,
                 token,
@@ -120,6 +119,7 @@ const Settings = () => {
                     error={error}
                     open={openModal1}
                     setOpenModal={setOpenModal1}
+                    isLoading = {isADLoading}
                 />
 
                 <SettingCard
@@ -130,6 +130,7 @@ const Settings = () => {
                     error={error}
                     open={openModal2}
                     setOpenModal={setOpenModal2}
+                    isLoading = {isADLoading}
                 />
 
                 <SettingCard
@@ -140,6 +141,7 @@ const Settings = () => {
                     error={error}
                     open={openModal3}
                     setOpenModal={setOpenModal3}
+                    isLoading = {isADLoading}
                 />
 
                 <SettingCard
@@ -150,6 +152,7 @@ const Settings = () => {
                     error={error}
                     open={openModal4}
                     setOpenModal={setOpenModal4}
+                    isLoading = {isADLoading}
                 />
             </section>
         </section>

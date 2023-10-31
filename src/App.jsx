@@ -42,16 +42,16 @@ const App = () => {
                     },
                     Input: {
                         controlHeight: 40,
-                        fontFamily: "Montserrat",
-                        fontSize: 16,
+                        fontFamily: "Inter",
+                        fontSize: 14,
                         colorBorder: "#BFBFBF",
                     },
                     InputNumber: {
-                        fontFamily: "Montserrat",
-                        fontSize: 16,
+                        fontFamily: "Inter",
+                        fontSize: 14,
                     },
                     Select: {
-                        fontFamily: "Montserrat",
+                        fontFamily: "Inter",
                     },
                 },
             }}

@@ -1,4 +1,4 @@
-import { Alert, DatePicker, Select, Space, Table } from "antd";
+import { DatePicker, Select, Table } from "antd";
 import { SearchForm, TableTlt } from "@/components";
 import AddNewIssuedBookForm from "./AddNewIssuedBooksForm";
 import { useGetAllIssuedRecordsByFilterQuery } from "./issuedBooksApi";
@@ -19,7 +19,7 @@ const IssuedBooksList = () => {
     const { data, isLoading: isISBLoading } =
         useGetAllIssuedRecordsByFilterQuery({
             keyword,
-            date: date.toISOString().slice(0, 7),
+            date: date.format("YYYY-MM"),
             token,
         });
     const issuedBooks = data;
@@ -124,6 +124,7 @@ const IssuedBooksList = () => {
                         defaultValue={dayjs()}
                         format={"MMMM YYYY"}
                         allowClear={false}
+                        inputReadOnly={true}
                     />{" "}
                     <Select
                         defaultValue={keyword}
@@ -148,10 +149,12 @@ const IssuedBooksList = () => {
                     <RenewIssuedBooks
                         issuedBookIds={selectedRowKeys}
                         setSelectedRowKeys={setSelectedRowKeys}
+                        setSearch={setSearch}
                     />
                     <ReturnIssuedBooks
                         issuedBookIds={selectedRowKeys}
                         setSelectedRowKeys={setSelectedRowKeys}
+                        setSearch={setSearch}
                     />
                 </div>
             </div>

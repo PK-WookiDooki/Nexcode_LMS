@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { scrollBackToTop } from "@/core/functions/scrollToTop";
 import {setAlert} from "@/core/global/context/notiSlice.js";
 
-const RenewIssuedBooks = ({ issuedBookIds, setSelectedRowKeys }) => {
+const RenewIssuedBooks = ({ issuedBookIds, setSelectedRowKeys, setSearch }) => {
     const { token } = useSelector((state) => state.authSlice);
     const [renewIssuedBooks] = useRenewIssuedBooksMutation();
     const [error, setError] = useState(null);
@@ -20,6 +20,7 @@ const RenewIssuedBooks = ({ issuedBookIds, setSelectedRowKeys }) => {
         scrollBackToTop();
         setSelectedRowKeys([]);
         setOpen(false);
+        setIsSubmitting(false)
     };
 
     const onRenewIssuedBooks = async () => {
@@ -34,9 +35,10 @@ const RenewIssuedBooks = ({ issuedBookIds, setSelectedRowKeys }) => {
                 dispatch(
                     setAlert({
                         alertType: "success",
-                        alertMsg: data?.message,
+                        alertMsg: ` ${issuedBookIds?.length > 1 ? "Books" : "Book"} renewal successful!`,
                     })
                 );
+                setSearch("")
                 closeModal();
             } else {
                 setIsSubmitting(false);

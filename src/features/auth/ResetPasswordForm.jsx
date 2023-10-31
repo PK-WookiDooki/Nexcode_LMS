@@ -1,4 +1,4 @@
-import { Form, Input } from "antd";
+import {Alert, Form, Input} from "antd";
 import { FormTlt, FormSubmitBtn } from "@/components";
 import { useResetPasswordMutation } from "./authApi";
 import imgBg from "@/assets/imgs/img_login.png";
@@ -6,13 +6,22 @@ import { MdOutlineLocalLibrary } from "react-icons/md";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setMessage } from "@/core/global/context/notiSlice";
-import { useState } from "react";
+import {useEffect, useState} from "react";
 
 const ResetPasswordForm = () => {
     const [form] = Form.useForm();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const nav = useNavigate();
     const dispatch = useDispatch();
+    const [error, setError] = useState(null)
+
+    useEffect(()=> {
+        if(error !== null){
+            setTimeout(() => {
+                setError(null)
+            }, 5000)
+        }
+    }, [error]);
 
     const [resetPassword] = useResetPasswordMutation();
     const onFinish = async (values) => {
@@ -33,12 +42,7 @@ const ResetPasswordForm = () => {
                 );
             } else {
                 setIsSubmitting(false);
-                dispatch(
-                    setMessage({
-                        msgType: "error",
-                        msgContent: error?.data?.message || error?.error,
-                    })
-                );
+                setError(error?.data?.message || error?.error)
             }
         } catch (error) {
             throw new Error(error);
@@ -74,6 +78,9 @@ const ResetPasswordForm = () => {
                         className="mt-5"
                         onFinish={onFinish}
                     >
+
+                        {error !== null ? <Alert message={error} type={"error"} showIcon={true} className={"mb-3"} /> : "" }
+
                         <Form.Item
                             label="Username"
                             name="username"

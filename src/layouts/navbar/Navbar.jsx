@@ -14,7 +14,7 @@ const Navbar = () => {
     }
 
     return (
-        <header className=" sticky top-0 shadow-sm z-10 bg-white ">
+        <header className=" sticky top-0 shadow z-10 bg-white ">
             <nav className="flex items-center justify-end gap-5 p-4 py-6 ">
                 <Link
                     to="/#odb"

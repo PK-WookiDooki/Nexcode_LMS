@@ -1,4 +1,4 @@
-import { Alert, Button, DatePicker, Form, Input, Modal, Select } from "antd";
+import { Alert, Button, DatePicker, Form, Modal, Select } from "antd";
 import { useEffect, useState } from "react";
 import { useAddNewIssuedBooksMutation } from "./issuedBooksApi";
 import { useGetAllCopiedBooksQuery } from "../copiedBooks/copiedBooksApi";
@@ -7,6 +7,7 @@ import dayjs from "dayjs";
 import { useDispatch, useSelector } from "react-redux";
 import { scrollBackToTop } from "@/core/functions/scrollToTop";
 import {setAlert} from "@/core/global/context/notiSlice.js";
+import {useGetAllMembersQuery} from "@/features/members/membersApi.js";
 
 const AddNewIssuedBookForm = () => {
     const [openModal, setOpenModal] = useState(false);
@@ -26,6 +27,19 @@ const AddNewIssuedBookForm = () => {
                 value: book.generatedId,
             };
         });
+
+    const {data : membersData} = useGetAllMembersQuery({token, keyword : "all"})
+    const memberIds = membersData?.map(member => {
+        return {
+            label : member?.name + `  (${member?.phone})`,
+            value : member?.id
+        }
+    })
+
+    const filterOption = (input, option) =>
+        (option?.label ?? '').toLowerCase().includes(input.toLowerCase());
+
+
     const [addNewIssuedBooks] = useAddNewIssuedBooksMutation();
 
     useEffect(() => {
@@ -48,7 +62,6 @@ const AddNewIssuedBookForm = () => {
                 issuedBookData,
                 token,
             });
-            // console.log(data);
             if (data?.success) {
                 setIsSubmitting(false);
                 dispatch(
@@ -70,6 +83,7 @@ const AddNewIssuedBookForm = () => {
     const closeModal = () => {
         form.resetFields();
         scrollBackToTop();
+        setIsSubmitting(false)
         setOpenModal(false);
     };
 
@@ -125,23 +139,38 @@ const AddNewIssuedBookForm = () => {
                         <Select
                             mode="multiple"
                             allowClear
-                            placeholder="Please enter book id . . ."
+                            placeholder="Please enter book id"
                             className=" issued-form "
                             options={generatedIds}
                             direction="horizontal"
                         />
                     </Form.Item>
+                    {/*<Form.Item*/}
+                    {/*    label="Member ID"*/}
+                    {/*    name="memberId"*/}
+                    {/*    rules={[*/}
+                    {/*        {*/}
+                    {/*            required: true,*/}
+                    {/*            message: "Please enter memberId!",*/}
+                    {/*        },*/}
+                    {/*    ]}*/}
+                    {/*>*/}
+                    {/*    <Input type="number" />*/}
+                    {/*</Form.Item>*/}
+
                     <Form.Item
-                        label="Member ID"
+                        label="Member Name"
                         name="memberId"
                         rules={[
                             {
                                 required: true,
-                                message: "Please enter memberId!",
+                                message: "Member Id is required!!",
                             },
                         ]}
+
                     >
-                        <Input type="number" />
+                        <Select placeholder="Please select member" options={memberIds} showSearch className={` issued-form `}
+                                filterOption={filterOption}/>
                     </Form.Item>
                     <Form.Item
                         name="issuedDate"
