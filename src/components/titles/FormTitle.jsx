@@ -1,7 +1,7 @@
 const FormTitle = ({ title, isCenter }) => {
     return (
         <h2
-            className={`text-xl font-semibold ${
+            className={`text-xl font-semibold capitalize ${
                 isCenter ? "text-center" : "text-left"
             } `}
         >

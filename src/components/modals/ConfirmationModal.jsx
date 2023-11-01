@@ -47,7 +47,7 @@ const ConfirmationModal = ({ event }) => {
                 open={openModal}
                 closeIcon={false}
                 centered
-                okText="Confirm"
+                okText="Delete"
                 okButtonProps={{
                     type: "primary",
                     className: "delete-btn",

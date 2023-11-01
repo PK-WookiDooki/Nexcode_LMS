@@ -5,9 +5,8 @@ import { useDispatch } from "react-redux";
 import { setLoginStatus } from "./authSlice";
 import { Link, useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
-import { FormTlt, FormSubmitBtn } from "@/components";
+import {FormTlt, FormSubmitBtn, Quote} from "@/components";
 import imgBg from "@/assets/imgs/img_login.png";
-import { MdOutlineLocalLibrary } from "react-icons/md";
 import { setMessage } from "@/core/global/context/notiSlice";
 
 const Login = () => {
@@ -16,6 +15,17 @@ const Login = () => {
     const [form] = Form.useForm();
     const dispatch = useDispatch();
     const nav = useNavigate();
+
+    const [isFormEmpty, setIsFormEmpty] = useState(true)
+
+    const nameValue = Form.useWatch("username", form)
+    const pwsValue = Form.useWatch("password", form)
+
+    useEffect(() => {
+        if(nameValue?.length > 0 && pwsValue?.length > 0 ) {
+            setIsFormEmpty(false)
+        }
+    },  [nameValue, pwsValue])
 
     useEffect(() => {
         if (error !== null) {
@@ -72,19 +82,8 @@ const Login = () => {
                 <img src={imgBg} alt="Login Image" />
                 <div className=" self-stretch w-full max-w-[1px] bg-black/30"></div>
                 <div className="max-w-[480px] w-full p-10 rounded-md shadow-md shadow-[#8FB5FF] bg-white">
-                    <div className="mb-8 text-darkBlue ">
-                        <h2 className="text-3xl font-bold flex items-center gap-2 justify-center mb-5">
-                            {" "}
-                            <MdOutlineLocalLibrary className="text-[42px]" />{" "}
-                            LIBRARY
-                        </h2>
-                        <p className="text-center">
-                            The library is your gateway to a universe of ideas
-                            and inspiration.
-                        </p>
-                    </div>
-
-                    <FormTlt isCenter={true} title={"Login"} />
+                    <Quote/>
+                    <FormTlt isCenter={true} title={"log in to dashboard"} />
                     <Form
                         form={form}
                         onFinish={onFinish}
@@ -94,7 +93,7 @@ const Login = () => {
                                 textAlign: "left",
                             },
                         }}
-                        className="mt-5"
+                        className="mt-2"
                     >
                         {error ? (
                             <Alert
@@ -134,7 +133,7 @@ const Login = () => {
                         </Form.Item>
                         <Link
                             to={"/resetPassword"}
-                            className="text-blue-600 block ml-auto w-fit mb-8 underline underline-offset-2 hover:underline hover:underline-offset-2"
+                            className="text-[#1890FF] text-sm font-medium block ml-auto w-fit mb-6 underline underline-offset-2 hover:underline hover:underline-offset-2"
                         >
                             {" "}
                             Forgot Password?{" "}
@@ -144,6 +143,7 @@ const Login = () => {
                             label={"login"}
                             isFullWidth={true}
                             isSubmitting={isSubmitting}
+                            isDisabled={isFormEmpty}
                         />
                     </Form>
                 </div>

@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { useDeleteBooksMutation, useGetAllBooksQuery } from "./booksApi";
-import { Alert, Space, Table } from "antd";
+import { Space, Table } from "antd";
 import AddNewBookForm from "./AddNewBookForm";
 import { ConfirmBox, SearchForm, TableTlt } from "@/components";
 import { useEffect, useState } from "react";
@@ -34,9 +34,13 @@ const BooksList = () => {
         {
             title: "No.",
             render: (_, book, index) => <p> {index + 1} </p>,
+        },{
+            title: "Book ID",
+            dataIndex: "id",
+            key: "id",
         },
         {
-            title: "Title",
+            title: "Book Title",
             dataIndex: "title",
             key: "title",
             render: (_, book) => (
@@ -51,23 +55,19 @@ const BooksList = () => {
                 </div>
             ),
         },
-        {
-            title: "Book ID",
-            dataIndex: "id",
-            key: "id",
-        },
+
         {
             title: "Total Books",
             dataIndex: "totalBooks",
             key: "totalBooks",
         },
         {
-            title: "Leftover Books",
+            title: "Available Books",
             dataIndex: "leftoverBooks",
             key: "leftoverBooks",
         },
         {
-            title: "Total Issued Books",
+            title: "Issued Books",
             dataIndex: "totalIssuedBooks",
             key: "totalIssuedBooks",
         },

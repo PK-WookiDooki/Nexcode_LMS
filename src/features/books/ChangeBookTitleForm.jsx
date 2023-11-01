@@ -108,7 +108,7 @@ const ChangeBookTitleForm = ({ book }) => {
                     >
                         <Input placeholder="Enter book title . . ." />
                     </Form.Item>
-                    <FormSubmitBtn label={"Save"} isSubmitting={isSubmitting} />
+                    <FormSubmitBtn label={"Save"} isSubmitting={isSubmitting} extraStyle={"mt-12"} />
                 </Form>
             </Modal>
         </section>

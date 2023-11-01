@@ -15,12 +15,12 @@ const Navbar = () => {
 
     return (
         <header className=" sticky top-0 shadow z-10 bg-white ">
-            <nav className="flex items-center justify-end gap-5 p-4 py-6 ">
+            <nav className="flex items-center justify-end gap-1 p-4 py-6 ">
                 <Link
                     to="/#odb"
                     onClick={location === "/" ? scrollIntoView : null
                 }
-                    className="text-2xl duration-200 relative"
+                    className="text-2xl duration-200 relative "
                 >
                     {" "}
                     <MdOutlineNotifications className="text-black/70" />{" "}

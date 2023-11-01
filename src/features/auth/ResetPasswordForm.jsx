@@ -1,8 +1,7 @@
 import {Alert, Form, Input} from "antd";
-import { FormTlt, FormSubmitBtn } from "@/components";
+import {FormTlt, FormSubmitBtn, Quote} from "@/components";
 import { useResetPasswordMutation } from "./authApi";
 import imgBg from "@/assets/imgs/img_login.png";
-import { MdOutlineLocalLibrary } from "react-icons/md";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setMessage } from "@/core/global/context/notiSlice";
@@ -14,6 +13,16 @@ const ResetPasswordForm = () => {
     const nav = useNavigate();
     const dispatch = useDispatch();
     const [error, setError] = useState(null)
+
+    const [isFormEmpty, setIsFormEmpty] = useState(true)
+
+    const nameValue = Form.useWatch("username", form);
+
+    useEffect(() => {
+        if(nameValue?.length > 0){
+            setIsFormEmpty(false)
+        }
+    }, [nameValue]);
 
     useEffect(()=> {
         if(error !== null){
@@ -55,18 +64,8 @@ const ResetPasswordForm = () => {
                 <img src={imgBg} alt="Login Image" />
                 <div className=" self-stretch w-full max-w-[1px] bg-black/30"></div>
                 <div className="max-w-[480px] w-full p-10 rounded-md shadow-md shadow-[#8FB5FF] bg-white">
-                    <div className="mb-8 text-darkBlue">
-                        <h2 className="text-3xl font-bold flex items-center gap-2  justify-center mb-5">
-                            {" "}
-                            <MdOutlineLocalLibrary className="text-[42px]" />{" "}
-                            LIBRARY
-                        </h2>
-                        <p className="text-center">
-                            The library is your gateway to a universe of ideas
-                            and inspiration.
-                        </p>
-                    </div>
-                    <FormTlt isCenter={true} title={"Reset Password"} />
+                    <Quote/>
+                    <FormTlt isCenter={true} title={"forgot password?"} />
                     <Form
                         form={form}
                         layout="vertical"
@@ -75,7 +74,7 @@ const ResetPasswordForm = () => {
                                 textAlign: "left",
                             },
                         }}
-                        className="mt-5"
+                        className="mt-2"
                         onFinish={onFinish}
                     >
 
@@ -93,23 +92,22 @@ const ResetPasswordForm = () => {
                         >
                             <Input />
                         </Form.Item>
-                        <div className="mt-3">
                             <FormSubmitBtn
                                 isSubmitting={isSubmitting}
                                 label={"Reset"}
                                 isFullWidth={true}
-                                extraStyle={"mt-3"}
+                                extraStyle={"mt-6"}
+                                isDisabled={isFormEmpty}
                             />
-                        </div>
                     </Form>
                     <p
-                        className="mt-6 text-center text-sm
+                        className="mt-6 text-center text-sm text-black/50
                     "
                     >
                         Are you sure you want to reset the password?{" "}
                         <Link
                             to={"/login"}
-                            className="text-[#1890FF] underline underline-offset-2 hover:underline hover:underline-offset-2 duration-200 "
+                            className="text-[#1890FF] font-medium underline underline-offset-2 hover:underline hover:underline-offset-2 duration-200 "
                         >
                             {" "}
                             Not now!

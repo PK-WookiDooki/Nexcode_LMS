@@ -14,6 +14,17 @@ const AddNewBookForm = ({  setAddedCPBooks }) => {
 
     const dispatch = useDispatch()
 
+    const [isFormEmpty, setIsFormEmpty] = useState(true)
+
+    const bookTitleValue = Form.useWatch("title", form);
+    const bookAmountValue = Form.useWatch("totalBooks", form);
+    useEffect(() => {
+        if(bookTitleValue?.length > 0 && bookAmountValue !== null){
+            setIsFormEmpty(false)
+        }
+    }, [bookTitleValue, bookAmountValue]);
+
+
 
     useEffect(() => {
         if (error !== null) {
@@ -122,7 +133,7 @@ const AddNewBookForm = ({  setAddedCPBooks }) => {
                         <InputNumber className="!h-10 !w-full flex flex-col justify-center" />
                     </Form.Item>
 
-                    <FormSubmitBtn label={"Save"} isSubmitting={isSubmitting} />
+                    <FormSubmitBtn label={"Save"} isSubmitting={isSubmitting} isDisabled={isFormEmpty} extraStyle={"mt-12"} />
                 </Form>
             </Modal>
         </section>

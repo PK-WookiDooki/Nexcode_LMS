@@ -76,10 +76,6 @@ const ODDBooksList = forwardRef(function ODDBooksList(
 
     const columns = [
         {
-            title: "No.",
-            render: (_, book, index) => <p> {index + 1} </p>,
-        },
-        {
             title: "Copied Books ID",
             dataIndex: "generatedId",
             key: "generatedId",
@@ -100,7 +96,7 @@ const ODDBooksList = forwardRef(function ODDBooksList(
             key: "name",
         },
         {
-            title: "Phone Number",
+            title: "Phone",
             dataIndex: "phone",
             key: "phone",
             render: (_, book) => <p> {formatPhoneNumber(book?.phone)} </p>

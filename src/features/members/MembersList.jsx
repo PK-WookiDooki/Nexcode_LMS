@@ -42,16 +42,15 @@ const MembersList = () => {
             title: "No.",
             render: (_, member, index) => <p> {index + 1} </p>,
         },
-
-        {
-            title: "Name",
-            dataIndex: "name",
-            key: "name",
-        },
         {
             title: "Member ID",
             dataIndex: "id",
             key: "id",
+        },
+        {
+            title: "Name",
+            dataIndex: "name",
+            key: "name",
         },
         {
             title: "Phone",
@@ -68,7 +67,7 @@ const MembersList = () => {
             ),
         },
         {
-            title: "Total Borrowed Books",
+            title: "Total Issued Books",
             dataIndex: "totalIssued",
             key: "totalIssued",
         },

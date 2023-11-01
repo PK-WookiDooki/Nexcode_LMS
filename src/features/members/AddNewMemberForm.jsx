@@ -1,5 +1,5 @@
 import { Alert, Button, Form, Input, Modal } from "antd";
-import { useState } from "react";
+import {useEffect, useState} from "react";
 import { useAddNewMembersMutation } from "./membersApi";
 import {FormSubmitBtn, ModalHeader} from "@/components";
 import {useDispatch, useSelector} from "react-redux";
@@ -14,6 +14,17 @@ const AddNewMemberForm = () => {
     const [isSubmitting, setIsSubmitting] = useState(false)
 
     const dispatch = useDispatch()
+
+    const [isFormEmpty, setIsFormEmpty] = useState(true)
+
+    const nameValue = Form.useWatch("name", form);
+    const phoneValue = Form.useWatch("phone", form);
+    const addressValue = Form.useWatch("address", form);
+    useEffect(() => {
+        if(nameValue?.trim().length > 0 && phoneValue?.trim().length > 0 && addressValue?.trim().length > 0){
+            setIsFormEmpty(false)
+        }
+    }, [nameValue, phoneValue]);
 
     const [addNewMembers] = useAddNewMembersMutation();
     const onFinish = async (values) => {
@@ -61,7 +72,7 @@ const AddNewMemberForm = () => {
                 className="form-modal"
                 closeIcon={false}
             >
-                <ModalHeader title={"Add New Member"} event={closeModal} />
+                <ModalHeader title={"Add Member"} event={closeModal} />
 
                 <Form
                     form={form}
@@ -105,7 +116,6 @@ const AddNewMemberForm = () => {
                                 message: "Please enter phone number!",
                             },
                             {
-                                // type: "regexp",
                                 pattern : /^(09)\d{9}$/,
                                 message : "Please enter valid phone number!"
                             }
@@ -113,10 +123,16 @@ const AddNewMemberForm = () => {
                     >
                         <Input />
                     </Form.Item>
-                    <Form.Item label="Address" name="address">
+                    <Form.Item label="Address" name="address"
+                               rules={[
+                                   {
+                                       required: true,
+                                       message: "Please enter member address!",
+                                   },
+                               ]}>
                         <Input />
                     </Form.Item>
-                    <FormSubmitBtn label={"Save"} isSubmitting={isSubmitting} />
+                    <FormSubmitBtn label={"Save"} isSubmitting={isSubmitting} isDisabled={isFormEmpty} extraStyle={"mt-12"} />
                 </Form>
             </Modal>
         </section>

@@ -1,23 +1,10 @@
 import { Dropdown } from "antd";
-import { useDispatch, useSelector } from "react-redux";
-import { removeCookies, setLoginStatus } from "@/features/auth/authSlice";
-import { CPwsForm } from "@/features";
+import { useSelector } from "react-redux";
+import {CPwsForm, Logout} from "@/features";
 import { BsPersonCircle } from "react-icons/bs";
 
 const AccountMenu = () => {
     const { username } = useSelector((state) => state.authSlice);
-    const dispatch = useDispatch();
-
-    const logoutHandler = (e) => {
-        e.preventDefault();
-        dispatch(removeCookies());
-        dispatch(
-            setLoginStatus({
-                user: null,
-                token: null,
-            })
-        );
-    };
 
     const items = [
         {
@@ -26,12 +13,7 @@ const AccountMenu = () => {
         },
         {
             key: "2",
-            label: (
-                <button onClick={logoutHandler} className="font-sans w-full">
-                    {" "}
-                    Logout{" "}
-                </button>
-            ),
+            label: <Logout/>,
             danger: true,
         },
     ];
@@ -44,9 +26,9 @@ const AccountMenu = () => {
                 arrow
                 trigger={["click"]}
             >
-                <button type="button" className="flex items-center gap-2">
+                <button type="button" className="flex items-center gap-2 px-3">
                     {" "}
-                    <BsPersonCircle className="text-xl" /> {username}
+                    <BsPersonCircle className="text-xl" /> {username || "admin" }
                 </button>
             </Dropdown>
         </section>

@@ -5,7 +5,6 @@ import {
     MdOutlineLocalLibrary,
     MdOutlineDashboard,
     MdDiversity3,
-    MdOutlineBook,
     MdOutlineLibraryBooks,
     MdOutlineSettings,
 } from "react-icons/md";

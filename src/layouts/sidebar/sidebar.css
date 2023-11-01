@@ -6,7 +6,7 @@
   ;}
 
   .sidebar{
-    @apply flex flex-col items-center min-w-[208px] w-full gap-3 mt-10
+    @apply flex flex-col items-center min-w-[208px] w-full gap-2 mt-10
   ;}
 
   .nav-link{ 

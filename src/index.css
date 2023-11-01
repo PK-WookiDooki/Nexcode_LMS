@@ -7,7 +7,7 @@
 
 @layer components{
   .submit-btn{
-    @apply px-4  text-sm rounded-md border-none !bg-primary hover:!bg-primary/80 text-white  duration-200 !font-sans min-w-max outline-none !capitalize
+    @apply px-4 text-sm !font-normal rounded-md border-none !bg-primary hover:!bg-primary/80 text-white  duration-200 !font-sans min-w-max outline-none !capitalize
   ;}
 
   .delete-btn{
@@ -15,7 +15,7 @@
   ;}
 
   .cancel-btn{
-    @apply !border-black hover:!border-black/70 !text-black hover:!text-black/70 !bg-transparent px-5  duration-200
+    @apply border-[#D9D9D9] hover:!border-black/50 !text-black/70 hover:!text-black  !bg-transparent px-5  duration-200
   ;}
 
   .confirm-btn{

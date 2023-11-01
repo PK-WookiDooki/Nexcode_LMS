@@ -15,6 +15,16 @@ const AddNewIssuedBookForm = () => {
     const [error, setError] = useState(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
+    const [isFormEmpty, setIsFormEmpty] = useState(true)
+
+    const generatedIdsValue = Form.useWatch("generatedIds", form);
+    const memberIdValue = Form.useWatch("memberId", form);
+    useEffect(() => {
+        if(generatedIdsValue?.length > 0 && memberIdValue !== null){
+            setIsFormEmpty(false)
+        }
+    }, [generatedIdsValue, memberIdValue]);
+
     const { token } = useSelector((state) => state.authSlice);
     const dispatch = useDispatch();
 
@@ -105,7 +115,7 @@ const AddNewIssuedBookForm = () => {
                 className="form-modal"
                 closeIcon={false}
             >
-                <ModalHeader title={"Add New Issued Book"} event={closeModal} />
+                <ModalHeader title={"Add Issued Book"} event={closeModal} />
                 <Form
                     form={form}
                     labelCol={{
@@ -180,10 +190,11 @@ const AddNewIssuedBookForm = () => {
                         <DatePicker
                             format={"DD-MM-YYYY"}
                             className="common-blk"
+                            inputReadOnly={true}
                         />
                     </Form.Item>
 
-                    <FormSubmitBtn isSubmitting={isSubmitting} label={"Save"} />
+                    <FormSubmitBtn isSubmitting={isSubmitting} label={"Save"} isDisabled={isFormEmpty} extraStyle={"mt-12"} />
                 </Form>
             </Modal>
         </section>

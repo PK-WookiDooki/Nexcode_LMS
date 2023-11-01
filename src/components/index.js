@@ -6,6 +6,7 @@ export { default as FormSubmitBtn } from "./buttons/FormSubmitButton";
 export { default as TableTlt } from "./titles/TableTitle";
 export { default as FormTlt } from "./titles/FormTitle";
 export { default as ModalHeader } from "./titles/ModalHeader";
+export {default as Quote} from "./titles/QuoteText.jsx"
 
 //route guards
 export { default as IsAuthenticated } from "./routeGuards/IsAuth";

@@ -46,10 +46,6 @@ const IssuedBooksList = ({
 
     const columns = [
         {
-            title: "No.",
-            render: (_, book, index) => <p> {index + 1} </p>,
-        },
-        {
             title: "Copied Books ID",
             dataIndex: "generatedId",
             key: "generatedId",
@@ -68,6 +64,11 @@ const IssuedBooksList = ({
             title: "Member Name",
             dataIndex: "name",
             key: "name",
+        },
+        {
+            title : "Phone",
+            dataIndex: "phone",
+            key: "phone"
         },
         {
             title: "Issued Date",

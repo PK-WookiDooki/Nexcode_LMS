@@ -62,9 +62,9 @@ const App = () => {
                     <Route
                         path="/"
                         element={
-                            <IsAuthenticated>
+                            // <IsAuthenticated>
                             <MainLayout />
-                            </IsAuthenticated>
+                            // </IsAuthenticated>
                         }
                     >
                         <Route index element={<HomePage />} />

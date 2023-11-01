@@ -12,10 +12,9 @@ export { default as IssuedBooks } from "./issuedBooks/IssuedBooksList";
 export { default as ODDBooks } from "./issuedBooks/ODDBooksList";
 export { default as AllIssuedBooks } from "./issuedBooks/AllIssuedBooksList";
 
-//admins
+//auth
 export { default as AdminSettings } from "./auth/Settings";
 export { default as AccountLogin } from "./auth/Login";
 export { default as CPwsForm } from "./auth/ChangePasswordForm";
 export { default as ResetPassword } from "./auth/ResetPasswordForm";
-
-//
+export {default as Logout} from "./auth/LogoutConfirmationModal.jsx"

@@ -19,6 +19,24 @@ const ChangePasswordForm = () => {
     const dispatch = useDispatch();
     const nav = useNavigate();
 
+    const [isFormEmpty, setIsFormEmpty] = useState(true)
+
+    const currentPwsValue = Form.useWatch("currentPassword", form);
+    const newPwsValue = Form.useWatch("newPassword", form);
+    const confirmPwsValue = Form.useWatch("password_confirmation", form);
+
+    useEffect(() => {
+        if(currentPwsValue?.trim().length > 0 && newPwsValue?.trim().length > 0 && confirmPwsValue?.trim().length > 0 ){
+            setIsFormEmpty(false)
+        }
+    }, [currentPwsValue, newPwsValue, confirmPwsValue]);
+
+    const customValidator = async (rule, value) => {
+        if (value?.includes(" ")) {
+            throw new Error("Password can not include space keyword!");
+        }
+    };
+
     useEffect(() => {
         if (error !== null) {
             setTimeout(() => {
@@ -61,8 +79,9 @@ const ChangePasswordForm = () => {
     };
 
     const closeModal = () => {
-        setIsSubmitting(false)
         form.resetFields();
+        setIsFormEmpty(true)
+        setIsSubmitting(false)
         setOpenModal(false);
     };
 
@@ -83,7 +102,7 @@ const ChangePasswordForm = () => {
             >
                 <ModalHeader
                     title={"Change Password"}
-                    event={() => setOpenModal(false)}
+                    event={closeModal}
                 />
                 <Form
                     onFinish={onFinish}
@@ -129,13 +148,11 @@ const ChangePasswordForm = () => {
                                 pattern:
                                     /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
                                 message:
-                                    "Password must have minimum eight characters, at least one uppercase letter, one number and one special character.",
+                                    "Password must have minimum eight characters with at least one uppercase letter, one number and one special character.",
                             },
                             {
-                                min: 8,
-                                message:
-                                    "Password must have at least 8 characters!",
-                            },
+                                validator : customValidator
+                            }
                         ]}
                     >
                         <Password />
@@ -170,10 +187,11 @@ const ChangePasswordForm = () => {
                     </Form.Item>
 
                     <FormSubmitBtn
-                        label={"Confirm"}
-                        isFullWidth={true}
-                        extraStyle={"mt-3"}
+                        label={"Save Changes"}
+                        isFullWidth={false}
+                        extraStyle={"mt-12"}
                         isSubmitting={isSubmitting}
+                        isDisabled={isFormEmpty}
                     />
                 </Form>
             </Modal>
