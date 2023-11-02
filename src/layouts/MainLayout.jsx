@@ -51,9 +51,8 @@ const MainLayout = () => {
                 <div className="h-full text-black">
 
                     {
-                        alert.alertType && alert.alertMsg ? <div className={` px-10 mb-8`}> <Alert message={alert.alertMsg} type={alert.alertType} closable={true} className={" !text-[#52C41A] !pl-10 !bg-[#52C41A26] !border-[#52C41A26] rounded-sm capitalize "} /> </div> : null
+                        alert.alertType && alert.alertMsg ? <div className={` px-10 mb-8`}> <Alert message={alert.alertMsg} type={alert.alertType} closable={true} className={" !text-c52 !pl-10 !bg-c52/[15%] !border-c52/[15%] rounded-sm capitalize "} /> </div> : null
                     }
-
                     <Outlet />
                 </div>
             </section>

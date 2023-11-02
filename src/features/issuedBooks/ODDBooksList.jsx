@@ -29,7 +29,7 @@ const ODDBooksList = forwardRef(function ODDBooksList(
         }
     }, [oddBooks]);
 
-    console.log(oddBooks)
+    // console.log(oddBooks)
 
     const onSelectChange = (record) => {
         setSelectedRowKeys(record);

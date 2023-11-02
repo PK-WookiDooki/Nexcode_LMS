@@ -7,7 +7,7 @@ import { scrollBackToTop } from "@/core/functions/scrollToTop";
 import {setAlert} from "@/core/global/context/notiSlice.js";
 import {useDispatch} from "react-redux";
 
-const ConfirmationModal = ({ event }) => {
+const ConfirmationModal = ({ event, type }) => {
     const [openModal, setOpenModal] = useState(false);
     const [error, setError] = useState(null);
     const dispatch = useDispatch()
@@ -30,10 +30,10 @@ const ConfirmationModal = ({ event }) => {
     };
 
     const closeModal = () => {
+        setOpenModal(false);
         setError(null);
         scrollBackToTop();
-        isSubmitting(false);
-        setOpenModal(false);
+        setIsSubmitting(false);
     };
 
     return (
@@ -60,7 +60,7 @@ const ConfirmationModal = ({ event }) => {
                 onOk={onSubmit}
                 onCancel={closeModal}
                 className="confirm-box"
-                width={440}
+                width={""}
             >
                 {error !== null ? (
                     <Alert
@@ -76,7 +76,7 @@ const ConfirmationModal = ({ event }) => {
                     <BsExclamationCircle className="text-xl text-yellow-500" />
                     <h2 className="font-medium text-base">
                         {" "}
-                        Are you sure you want to delete this ?{" "}
+                        Are you sure you want to delete this {type} ?{" "}
                     </h2>
                 </div>
             </Modal>

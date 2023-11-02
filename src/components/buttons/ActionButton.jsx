@@ -7,7 +7,7 @@ const ActionButton = ({ event, label, actionFor }) => {
             htmlType="button"
             size="small"
             onClick={event}
-            className={` !px-2 ${
+            className={` !px-2 !min-w-[80px] !rounded-md ${
                 actionFor === "edit"
                     ? "!border-[#91D5FF] !bg-[#E6F7FF] !text-darkBlue "
                     : " !border-[#FFA39E] !bg-[#FFF1F0] !text-danger"

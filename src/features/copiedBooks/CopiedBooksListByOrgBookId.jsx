@@ -1,7 +1,7 @@
 import {Table} from "antd"
-import { TableTlt } from "@/components";
+import {SearchForm, TableTlt} from "@/components";
 import { useGetCopiedBooksByOrgIdQuery } from "./copiedBooksApi";
-import { useState } from "react";
+import {useEffect, useState} from "react";
 import { useParams, Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { MdArrowBack } from "react-icons/md";
@@ -14,6 +14,32 @@ const CopiedBooksList = () => {
         token,
     });
     const copiedBooks = data;
+
+    // fake data
+    // const copiedBooks = [ {
+    //         "generatedId": "1B1C",
+    //         "damaged": false,
+    //         "issued": false,
+    //         "title": "Under a Latent Moon"
+    //     },
+    //     {
+    //         "generatedId": "1B2C",
+    //         "damaged": false,
+    //         "issued": true,
+    //         "title": "Under a Latent Moon"
+    //     }]
+
+
+    const [search, setSearch]= useState("")
+    const [filteredBooks, setFilteredBooks] = useState([])
+
+    useEffect(() => {
+        if(search?.trim().length > 0){
+            const searchedBooks = copiedBooks?.filter(book => book?.generatedId.toLowerCase().includes(search.toLowerCase()));
+            setFilteredBooks(searchedBooks)
+        }
+    }, [search]);
+
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
     const rowSelection = {
         selectedRowKeys,
@@ -46,15 +72,15 @@ const CopiedBooksList = () => {
                 <p
                     className={` flex items-center gap-2 ${
                         book?.issued || book?.damaged
-                            ? "text-red-600"
-                            : " text-emerald-500 "
+                            ? "text-danger"
+                            : " text-c52 "
                     } `}
                 >
                     <span
                         className={`block h-2 w-2 rounded-full ${
                             book?.issued || book?.damaged
-                                ? "bg-red-600"
-                                : "bg-emerald-500"
+                                ? "bg-danger"
+                                : "bg-c52"
                         }`}
                     ></span>
                     {book?.issued
@@ -72,12 +98,12 @@ const CopiedBooksList = () => {
             render: (_, book) => (
                 <p
                     className={` flex items-center gap-2 ${
-                        book?.damaged ? "text-red-600" : " text-emerald-500 "
+                        book?.damaged ? "text-danger" : " text-c52 "
                     } `}
                 >
                     <span
                         className={`block h-2 w-2 rounded-full ${
-                            book?.damaged ? "bg-red-600" : "bg-emerald-500"
+                            book?.damaged ? "bg-danger" : "bg-c52"
                         }`}
                     ></span>
                     {book?.damaged ? "Damaged" : "Fine"}{" "}
@@ -90,22 +116,28 @@ const CopiedBooksList = () => {
         <section className="px-10">
             <Link
                 to={".."}
-                className="flex items-center gap-3 text-black hover:text-black/80 duration-200 w-fit"
+                className="flex items-center gap-1 font-medium  text-black hover:text-black/80 duration-200 w-fit mb-4"
             >
                 {" "}
                 <MdArrowBack className="text-xl" /> Books List
             </Link>
-            <div className="flex items-center justify-between my-6">
-                <TableTlt title={`Copied Books ID List`} />
-                <SetDamagedBooks
-                    generatedIds={selectedRowKeys}
-                    setSelectedRowKeys={setSelectedRowKeys}
-                />
+            <TableTlt title={`Copied Books ID List`} />
+            <div className="flex items-center justify-between mb-6 mt-11">
+            <SearchForm
+                search={search}
+                setSearch={setSearch}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder={"Search by Copied Book ID"}
+            /> <SetDamagedBooks
+                generatedIds={selectedRowKeys}
+                setSelectedRowKeys={setSelectedRowKeys}
+            />
             </div>
+
             <Table
                 className="copied-table"
                 columns={columns}
-                dataSource={copiedBooks}
+                dataSource={search?.trim().length > 0 ? filteredBooks : copiedBooks}
                 loading={isLoading}
                 rowSelection={rowSelection}
                 rowKey={(record) => record?.generatedId}

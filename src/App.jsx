@@ -38,7 +38,7 @@ const App = () => {
                 components: {
                     Button: {
                         controlHeight: 40,
-                        controlHeightSM: 30,
+                        controlHeightSM: 24,
                     },
                     Input: {
                         controlHeight: 40,
@@ -62,9 +62,9 @@ const App = () => {
                     <Route
                         path="/"
                         element={
-                            // <IsAuthenticated>
+                            <IsAuthenticated>
                             <MainLayout />
-                            // </IsAuthenticated>
+                            </IsAuthenticated>
                         }
                     >
                         <Route index element={<HomePage />} />
@@ -74,7 +74,7 @@ const App = () => {
                         <Route path="books">
                             <Route index element={<Books />} />
                             <Route
-                                path=":bookId"
+                                path=":bookId/copiedIds"
                                 element={<CopiedBooksByOrgBookId />}
                             />
                         </Route>

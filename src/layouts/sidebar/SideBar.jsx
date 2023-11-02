@@ -8,6 +8,7 @@ import {
     MdOutlineLibraryBooks,
     MdOutlineSettings,
 } from "react-icons/md";
+import {scrollBackToTop} from "@/core/functions/scrollToTop.js";
 
 const SideBar = () => {
     return (
@@ -15,6 +16,7 @@ const SideBar = () => {
             <h1 className="text-3xl font-bold uppercase py-4 text-primary">
                 <Link
                     to={"/"}
+                    onClick={scrollBackToTop}
                     className="flex items-center gap-2 justify-center"
                 >
                     <MdOutlineLocalLibrary />

@@ -19,10 +19,10 @@ const SettingCard = ({
 
     return (
         <section className="p-5 bg-[#D6E4FF]/30">
-            <div className="flex items-center gap-5 ml-12">
-                <h2 className="flex items-center gap-5 text-lg font-medium">
+            <div className="flex items-center gap-2 ml-12">
+                <h2 className="flex items-center gap-5 text-xl font-medium">
                     {" "}
-                    {title} : <span>{currentValue}</span>
+                    {title} : <span>{currentValue || 0}</span>
                 </h2>
                 <button
                     onClick={() => setOpenModal(true)}
@@ -77,15 +77,15 @@ const SettingCard = ({
                             className="w-full h-10 leading-10 text-base"
                         />
                     </Form.Item>
-                    <div className="flex justify-end">
+
                         <Button
                             type="primary"
                             htmlType="submit"
-                            className={` shadow-none confirm-btn`}
+                            className={` shadow-none confirm-btn w-fit block ml-auto mt-12`}
                         >
                             Save
                         </Button>
-                    </div>
+
                 </Form>
             </Modal>
         </section>

@@ -4,6 +4,7 @@ import { useAddNewBooksMutation } from "./booksApi";
 import { ModalHeader, FormSubmitBtn } from "@/components";
 import {useDispatch, useSelector} from "react-redux";
 import {setAlert} from "@/core/global/context/notiSlice.js";
+import {scrollBackToTop} from "@/core/functions/scrollToTop.js";
 const AddNewBookForm = ({  setAddedCPBooks }) => {
     const { token } = useSelector((state) => state.authSlice);
 
@@ -61,6 +62,7 @@ const AddNewBookForm = ({  setAddedCPBooks }) => {
     };
 
     const closeModal = () => {
+        scrollBackToTop();
         form.resetFields();
         setOpenModal(false);
         setIsSubmitting(false)

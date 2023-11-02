@@ -25,6 +25,14 @@ const AddMoreBooksForm = ({
         }
     }, [error]);
 
+    const [isFormEmpty, setIsFormEmpty] = useState(true)
+    const amountValue = Form.useWatch("amount", form)
+    useEffect(() => {
+        if(amountValue?.toString().trim().length > 0 ){
+            setIsFormEmpty(false)
+        }
+    }, [amountValue]);
+
     const [addMoreBooks] = useAddMoreBooksMutation();
     const updateBookAmount = async (values) => {
         try {
@@ -34,9 +42,6 @@ const AddMoreBooksForm = ({
                 bookId,
                 token,
             });
-
-
-
             if (data) {
                 dispatch(
                     setAlert({
@@ -116,7 +121,7 @@ const AddMoreBooksForm = ({
                             className="!w-full !h-10 flex flex-col justify-center"
                         />
                     </Form.Item>
-                    <FormSubmitBtn label={"Save"} isSubmitting={isSubmitting} />
+                    <FormSubmitBtn label={"Save"} isSubmitting={isSubmitting} extraStyle={"mt-12"} isDisabled={isFormEmpty} />
                 </Form>
             </Modal>
         </section>

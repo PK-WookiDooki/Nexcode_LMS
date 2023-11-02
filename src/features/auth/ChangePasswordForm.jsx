@@ -56,7 +56,7 @@ const ChangePasswordForm = () => {
                 updatedPasswords,
                 token,
             });
-            console.log(data);
+            // console.log(data);
             if (data?.success) {
                 closeModal();
                 dispatch(removeCookies());

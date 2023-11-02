@@ -78,7 +78,7 @@ const ReturnIssuedBooks = ({ issuedBookIds, setSelectedRowKeys, setSearch }) => 
                 }}
                 onOk={onReturnIssuedBooks}
                 className="confirm-box"
-                width={450}
+                width={""}
             >
                 {error !== null ? (
                     <Alert

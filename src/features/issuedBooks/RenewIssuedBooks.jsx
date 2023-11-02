@@ -73,7 +73,7 @@ const RenewIssuedBooks = ({ issuedBookIds, setSelectedRowKeys, setSearch }) => {
                     className: "confirm-btn",
                     loading: isSubmitting,
                 }}
-                width={450}
+                width={""}
                 cancelButtonProps={{
                     type: "default",
                     className: "cancel-btn",

@@ -10,6 +10,7 @@ export default {
                 danger: "#FF4D4F",
                 secondary: "#F5F5F5",
                 disabledGray: "#BFBFBF",
+                c52 : "#52C41A"
             },
         },
         fontFamily: {

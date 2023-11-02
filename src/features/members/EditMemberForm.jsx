@@ -4,6 +4,7 @@ import { useUpdateMembersMutation } from "./membersApi";
 import {FormSubmitBtn, ModalHeader, ActionBtn} from "@/components";
 import {useDispatch, useSelector} from "react-redux";
 import {setAlert} from "@/core/global/context/notiSlice.js";
+import {scrollBackToTop} from "@/core/functions/scrollToTop.js";
 
 const EditMemberForm = ({ member, setSearch }) => {
     const { token } = useSelector((state) => state.authSlice);
@@ -45,6 +46,7 @@ const EditMemberForm = ({ member, setSearch }) => {
     };
 
     const closeModal = () => {
+        scrollBackToTop()
         setOpenModal(false);
         setError(null);
     };
@@ -111,10 +113,17 @@ const EditMemberForm = ({ member, setSearch }) => {
                     >
                         <Input />
                     </Form.Item>
-                    <Form.Item label="Address" name="address">
+                    <Form.Item label="Address" name="address"
+                               rules={[
+                                   {
+                                       required: true,
+                                       message: "Please enter member address!",
+                                   },
+                               ]}
+                    >
                         <Input />
                     </Form.Item>
-                    <FormSubmitBtn label={"Save"} isSubmitting={isSubmitting} />
+                    <FormSubmitBtn label={"Save"} isSubmitting={isSubmitting} extraStyle={"mt-12"} />
                 </Form>
             </Modal>
         </section>

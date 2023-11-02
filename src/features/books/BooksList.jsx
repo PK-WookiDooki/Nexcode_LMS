@@ -30,6 +30,18 @@ const BooksList = () => {
 
     const [deleteBooks] = useDeleteBooksMutation();
 
+    // fake data
+    // const testData = [
+    //     {
+    //         id : 1,
+    //         title : "The Law of Human Nature",
+    //         totalBooks: 5,
+    //         leftoverBooks: 3,
+    //         totalIssuedBooks : 2,
+    //         damagedBooks : 0
+    //     }
+    // ]
+
     const columns = [
         {
             title: "No.",
@@ -46,7 +58,7 @@ const BooksList = () => {
             render: (_, book) => (
                 <div className="flex items-center gap-3">
                     <Link
-                        to={`/books/${book?.id}`}
+                        to={`/books/${book?.id}/copiedIds`}
                         className="block text-darkBlue hover:text-darkBlue/80 duration-200"
                     >
                         {book?.title}
@@ -87,6 +99,7 @@ const BooksList = () => {
                     />
                     <ConfirmBox
                         event={() => deleteBooks({ id: book?.id, token })}
+                        type={"book"}
                     />
                 </Space>
             ),
@@ -121,7 +134,7 @@ const BooksList = () => {
                     dataSource={
                         search?.trim().length > 0 ? searchedBooks : books
                     }
-                    //dataSource={fakeData}
+                    // dataSource={testData}
                     loading={isBLoading}
                     rowKey={(record) => record?.id}
                 />

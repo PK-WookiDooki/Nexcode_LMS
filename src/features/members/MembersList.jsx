@@ -34,9 +34,19 @@ const MembersList = () => {
         setSearch("");
     };
 
-    // console.log(members)
-
     const [deleteMembers] = useDeleteMembersMutation();
+
+    // fake data
+    // const testData = [
+    //     {
+    //         id : 1,
+    //         name: "Genos",
+    //         phone : "09423387992",
+    //         address : "Mandalay",
+    //         totalIssued : 2
+    //     }
+    // ]
+
     const columns = [
         {
             title: "No.",
@@ -79,6 +89,7 @@ const MembersList = () => {
                     <EditMemberForm member={member} setSearch={setSearch} />
                     <ConfirmBox
                         event={() => deleteMembers({ id: member?.id, token })}
+                        type={"member"}
                     />
                 </Space>
             ),
@@ -120,6 +131,7 @@ const MembersList = () => {
                     dataSource={
                         search?.trim().length > 0 ? searchedMembers : members
                     }
+                    // dataSource={testData}
                     loading={isLoading}
                     rowKey={(record) => record?.id}
                 />
