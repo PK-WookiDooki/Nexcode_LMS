@@ -7,7 +7,7 @@ import {
     useUpdateExtendableTimesMutation,
 } from "./authApi";
 import SettingCard from "./SettingCard";
-import {setAlert} from "@/core/global/context/notiSlice.js";
+import {setAlert, setMessage} from "@/core/global/context/notiSlice.js";
 import { TableTlt } from "@/components";
 import {useDispatch, useSelector} from "react-redux";
 
@@ -39,10 +39,10 @@ const Settings = () => {
                 token,
             });
             if (data?.success) {
-                dispatch(setAlert({alertType: "success", alertMsg : data?.message}))
                 setOpenModal1(false);
+                dispatch(setMessage({msgType : "success", msgContent : data?.message}))
             } else {
-                setError(apiError?.data?.message || apiError?.error);
+                dispatch(setMessage({msgType: "error", msgContent: apiError?.data?.message || apiError?.error }))
             }
         } catch (error) {
             throw new Error(error);
@@ -57,10 +57,10 @@ const Settings = () => {
                 token,
             });
             if (data?.success) {
-                dispatch(setAlert({alertType: "success", alertMsg : data?.message}))
                 setOpenModal2(false);
+                dispatch(setMessage({msgType : "success", msgContent : data?.message}))
             } else {
-                setError(apiError?.data?.message || apiError?.error);
+                dispatch(setMessage({msgType: "error", msgContent: apiError?.data?.message || apiError?.error }))
             }
         } catch (error) {
             throw new Error(error);
@@ -76,10 +76,10 @@ const Settings = () => {
                 token,
             });
             if (data?.success) {
-                dispatch(setAlert({alertType: "success", alertMsg : data?.message}))
                 setOpenModal3(false);
+                dispatch(setMessage({msgType : "success", msgContent : data?.message}))
             } else {
-                setError(apiError?.data?.message || apiError?.error);
+                dispatch(setMessage({msgType: "error", msgContent: apiError?.data?.message || apiError?.error }))
             }
         } catch (error) {
             throw new Error(error);
@@ -94,10 +94,10 @@ const Settings = () => {
                 token,
             });
             if (data?.success) {
-                dispatch(setAlert({alertType: "success", alertMsg : data?.message}))
                 setOpenModal4(false);
+                dispatch(setMessage({msgType : "success", msgContent : data?.message}))
             } else {
-                setError(apiError?.data?.message || apiError?.error);
+                dispatch(setMessage({msgType: "error", msgContent: apiError?.data?.message || apiError?.error }))
             }
         } catch (error) {
             throw new Error(error);
@@ -106,13 +106,13 @@ const Settings = () => {
 
     return (
         <section className="text-black">
-            <div className="px-10 mb-11">
+            <div className="px-10 mb-8">
                 <TableTlt title={"Settings"} />
             </div>
 
-            <section className="grid grid-cols-1 gap-5 ">
+            <section className="grid grid-cols-1 gap-4 ">
                 <SettingCard
-                    title={"Books Limit"}
+                    title={"Rentable Books"}
                     currentValue={adminData?.bookLimit}
                     event={changeBooksLimit}
                     name={"bookLimit"}

@@ -13,18 +13,23 @@ const AddedCopiedBooksList = ({ copiedBooks }) => {
             key: "generatedId",
         },
         {
+            title: "Book Title",
+            dataIndex: "title",
+            key: "title",
+        },
+        {
             title: "Issued Status",
             dataIndex: "issued",
             key: "issued",
             render: (_, book) => (
                 <p
-                    className={` flex items-center gap-2 ${
-                        book?.issued ? "text-red-600" : " text-emerald-500 "
+                    className={` flex items-center justify-center gap-2 ${
+                        book?.issued ? "text-danger" : " text-c52 "
                     } `}
                 >
                     <span
                         className={`block h-2 w-2 rounded-full ${
-                            book?.issued ? "bg-red-600" : "bg-emerald-500"
+                            book?.issued ? "bg-danger" : "bg-c52"
                         }`}
                     ></span>
                     {book?.issued ? "Borrowed" : "Available"}{" "}
@@ -32,18 +37,18 @@ const AddedCopiedBooksList = ({ copiedBooks }) => {
             ),
         },
         {
-            title: "Status",
+            title: "Damaged Status",
             dataIndex: "damaged",
             key: "damaged",
             render: (_, book) => (
                 <p
-                    className={` flex items-center gap-2 ${
-                        book?.damaged ? "text-red-600" : " text-emerald-500 "
+                    className={` flex items-center justify-center gap-2 ${
+                        book?.damaged ? "text-danger" : " text-c52 "
                     } `}
                 >
                     <span
                         className={`block h-2 w-2 rounded-full ${
-                            book?.damaged ? "bg-red-600" : "bg-emerald-500"
+                            book?.damaged ? " bg-danger " : " bg-c52 " 
                         }`}
                     ></span>
                     {book?.damaged ? "Damaged" : "Fine"}{" "}
@@ -57,6 +62,7 @@ const AddedCopiedBooksList = ({ copiedBooks }) => {
             <TableTlt title={"Added Copied Books List"} />
             <div className="mt-3">
                 <Table
+                    bordered
                     columns={columns}
                     dataSource={copiedBooks}
                     rowKey={(record) => record?.generatedId}

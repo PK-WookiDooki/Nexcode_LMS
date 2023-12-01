@@ -14,11 +14,11 @@ const SettingCard = ({
 }) => {
 
     if(isLoading){
-        return <Skeleton.Input active={true} className={" !h-16 !w-full "} />
+        return <Skeleton.Input active={true} className={" !h-[100px] !w-full "} />
     }
 
     return (
-        <section className="p-5 bg-[#D6E4FF]/30">
+        <section className="h-[100px] flex items-center  bg-[#D6E4FF]/30 shadow">
             <div className="flex items-center gap-2 ml-12">
                 <h2 className="flex items-center gap-5 text-xl font-medium">
                     {" "}
@@ -26,7 +26,7 @@ const SettingCard = ({
                 </h2>
                 <button
                     onClick={() => setOpenModal(true)}
-                    className=" text-darkBlue outline-none text-xl"
+                    className=" text-darkBlue outline-none text-lg"
                 >
                     <MdOutlineBorderColor />
                 </button>
@@ -81,7 +81,7 @@ const SettingCard = ({
                         <Button
                             type="primary"
                             htmlType="submit"
-                            className={` shadow-none confirm-btn w-fit block ml-auto mt-12`}
+                            className={` shadow-none confirm-btn w-fit block ml-auto`}
                         >
                             Save
                         </Button>

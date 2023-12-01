@@ -5,7 +5,7 @@ import { useUpdateBookTitleMutation } from "./booksApi";
 import { MdOutlineBorderColor} from "react-icons/md";
 import {useDispatch, useSelector} from "react-redux";
 import { scrollBackToTop } from "@/core/functions/scrollToTop";
-import {setAlert} from "@/core/global/context/notiSlice.js";
+import {setAlert, setMessage} from "@/core/global/context/notiSlice.js";
 
 const ChangeBookTitleForm = ({ book }) => {
     const { token } = useSelector((state) => state.authSlice);
@@ -33,16 +33,11 @@ const ChangeBookTitleForm = ({ book }) => {
                 token,
             });
             if (data?.success) {
-                dispatch(
-                    setAlert({
-                        alertType: "success",
-                        alertMsg: data?.message,
-                    })
-                );
+                dispatch(setMessage({msgType: "success", msgContent: data?.message}))
                 closeModal();
             } else {
-                setIsSubmitting(false)
-                setError(apiError?.data?.message || apiError?.error);
+                dispatch(setMessage({msgType: "error", msgContent: apiError?.data?.message || apiError?.error }))
+                setIsSubmitting(false);
             }
         } catch (error) {
             throw new Error(error);
@@ -108,7 +103,7 @@ const ChangeBookTitleForm = ({ book }) => {
                     >
                         <Input placeholder="Enter book title . . ." />
                     </Form.Item>
-                    <FormSubmitBtn label={"Save"} isSubmitting={isSubmitting} extraStyle={"mt-12"} />
+                    <FormSubmitBtn label={"Save"} isSubmitting={isSubmitting} />
                 </Form>
             </Modal>
         </section>

@@ -3,8 +3,8 @@ import { useEffect, useState } from "react";
 import { useUpdateMembersMutation } from "./membersApi";
 import {FormSubmitBtn, ModalHeader, ActionBtn} from "@/components";
 import {useDispatch, useSelector} from "react-redux";
-import {setAlert} from "@/core/global/context/notiSlice.js";
 import {scrollBackToTop} from "@/core/functions/scrollToTop.js";
+import {setMessage} from "@/core/global/context/notiSlice.js";
 
 const EditMemberForm = ({ member, setSearch }) => {
     const { token } = useSelector((state) => state.authSlice);
@@ -33,11 +33,11 @@ const EditMemberForm = ({ member, setSearch }) => {
                 token,
             });
             if (data?.success) {
-                dispatch(setAlert({alertType: "success", alertMsg: "Member update successful!"}))
+                dispatch(setMessage({msgType: "success", msgContent: "Member updated successfully!"}))
                 closeModal();
                 setSearch("")
             } else {
-                setError(apiError?.data?.message || apiError?.error);
+                dispatch(setMessage({msgType: "error", msgContent: apiError?.data?.message || apiError?.error }))
                 setIsSubmitting(false);
             }
         } catch (error) {
@@ -109,6 +109,10 @@ const EditMemberForm = ({ member, setSearch }) => {
                                 required: true,
                                 message: "Please enter phone number!",
                             },
+                            {
+                                pattern : /^(09)\d{6,9}$/,
+                                message : "Please enter valid phone number!"
+                            }
                         ]}
                     >
                         <Input />
@@ -123,7 +127,7 @@ const EditMemberForm = ({ member, setSearch }) => {
                     >
                         <Input />
                     </Form.Item>
-                    <FormSubmitBtn label={"Save"} isSubmitting={isSubmitting} extraStyle={"mt-12"} />
+                    <FormSubmitBtn label={"Save"} isSubmitting={isSubmitting} />
                 </Form>
             </Modal>
         </section>

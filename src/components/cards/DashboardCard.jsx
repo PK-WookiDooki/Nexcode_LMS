@@ -5,7 +5,7 @@ const DashboardCard = ({ title, count, path, event }) => {
         <Link
             to={path}
             onClick={event}
-            className="p-3 rounded-md bg-lightBlue font-medium shadow-md shadow-[#C5CFE9] w-full hover:shadow-md duration-200 "
+            className="p-3 rounded-md bg-lightBlue font-medium shadow-md shadow-[#C5CFE9] w-full hover:shadow-lg hover:shadow-[#C5CFE9] duration-200 "
         >
             <p> {title} </p>
             <h2 className="text-center text-[40px] my-4">

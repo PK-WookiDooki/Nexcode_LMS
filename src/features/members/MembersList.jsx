@@ -7,11 +7,18 @@ import EditMemberForm from "./EditMemberForm";
 import { useSelector } from "react-redux";
 import {formatPhoneNumber} from "@/core/functions/formatPhoneNumber.js";
 
+const searchedOptions = [
+    {label : "Member Id", value : "id"},
+    {label:  "Name", value: "name"}, {label : "Phone", value : "phone"}
+
+]
+
 const MembersList = () => {
     const { token } = useSelector((state) => state.authSlice);
 
     const [keyword, setKeyword] = useState("all");
     const [search, setSearch] = useState("");
+    const [selectedSearchedOpt, setSelectedSearchedOpt] = useState("id")
 
     const { data, isLoading } = useGetAllMembersQuery({ token, keyword });
     const members = data;
@@ -21,11 +28,8 @@ const MembersList = () => {
 
     useEffect(() => {
         const filteredMembers = members?.filter(
-            (member) =>
-                member.name.toLowerCase().includes(search.toLowerCase()) ||
-                member.id.toString().includes(search) ||
-                member.phone.toString().includes(search)
-        );
+            book => book[selectedSearchedOpt].toString().toLowerCase().includes(search?.toLowerCase())
+        )
         setSearchMembers(filteredMembers);
     }, [search]);
 
@@ -34,18 +38,11 @@ const MembersList = () => {
         setSearch("");
     };
 
-    const [deleteMembers] = useDeleteMembersMutation();
+    const onSearchedOptChange = (value) => {
+        setSelectedSearchedOpt(value)
+    }
 
-    // fake data
-    // const testData = [
-    //     {
-    //         id : 1,
-    //         name: "Genos",
-    //         phone : "09423387992",
-    //         address : "Mandalay",
-    //         totalIssued : 2
-    //     }
-    // ]
+    const [deleteMembers] = useDeleteMembersMutation();
 
     const columns = [
         {
@@ -85,7 +82,7 @@ const MembersList = () => {
             title: "Action",
             key: "action",
             render: (_, member) => (
-                <Space size="middle">
+                <Space size="middle" className={`flex justify-center`} >
                     <EditMemberForm member={member} setSearch={setSearch} />
                     <ConfirmBox
                         event={() => deleteMembers({ id: member?.id, token })}
@@ -97,9 +94,9 @@ const MembersList = () => {
     ];
 
     return (
-        <section className="px-10">
-            <div className="flex items-center gap-6 mb-11">
-                <TableTlt title={"Members List"} />
+        <section className="px-10 pb-10">
+            <div className="flex items-center gap-6 mb-8">
+                <TableTlt title={"Members"} />
                 <AddNewMemberForm />
             </div>
             <div className="flex items-center gap-6 mb-6">
@@ -107,7 +104,9 @@ const MembersList = () => {
                     search={search}
                     setSearch={setSearch}
                     onChange={(e) => setSearch(e.target.value)}
-                    placeholder={"Search by Member ID / Name / Phone"}
+                    placeholder={"Search member"}
+                    searchedOptions={searchedOptions}
+                    onSearchedOptChange={onSearchedOptChange}
                 />
 
                 <Select
@@ -127,6 +126,7 @@ const MembersList = () => {
             </div>
             <div className="mt-3">
                 <Table
+                    bordered
                     columns={columns}
                     dataSource={
                         search?.trim().length > 0 ? searchedMembers : members

@@ -4,10 +4,10 @@ import { ActionBtn } from "..";
 import { useState } from "react";
 import "./confirmModal.css";
 import { scrollBackToTop } from "@/core/functions/scrollToTop";
-import {setAlert} from "@/core/global/context/notiSlice.js";
+import {setAlert, setMessage} from "@/core/global/context/notiSlice.js";
 import {useDispatch} from "react-redux";
 
-const ConfirmationModal = ({ event, type }) => {
+const ConfirmationModal = ({ event, type, }) => {
     const [openModal, setOpenModal] = useState(false);
     const [error, setError] = useState(null);
     const dispatch = useDispatch()
@@ -19,13 +19,14 @@ const ConfirmationModal = ({ event, type }) => {
             const { data, error: apiError } = await event();
             if (data?.success) {
                 closeModal()
-                dispatch(setAlert({alertType: "success", alertMsg: data?.message}));
+                dispatch(setMessage({msgType : "success", msgContent : data?.message}))
             } else {
-                setIsSubmitting(false)
-                setError(apiError?.data?.message || apiError?.error);
+                dispatch(setMessage({msgType: "error", msgContent: apiError?.data?.message || apiError?.error }))
             }
         } catch (error) {
             throw new Error(error);
+        } finally {
+            setIsSubmitting(false)
         }
     };
 
@@ -73,7 +74,7 @@ const ConfirmationModal = ({ event, type }) => {
                     ""
                 )}
                 <div className="flex flex-row items-center justify-center gap-4 pb-6">
-                    <BsExclamationCircle className="text-xl text-yellow-500" />
+                    <BsExclamationCircle className="text-2xl text-[#FAAD14] min-w-max  " />
                     <h2 className="font-medium text-base">
                         {" "}
                         Are you sure you want to delete this {type} ?{" "}

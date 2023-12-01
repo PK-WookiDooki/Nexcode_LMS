@@ -6,7 +6,7 @@ import { ModalHeader, FormSubmitBtn } from "@/components";
 import dayjs from "dayjs";
 import { useDispatch, useSelector } from "react-redux";
 import { scrollBackToTop } from "@/core/functions/scrollToTop";
-import {setAlert} from "@/core/global/context/notiSlice.js";
+import {setAlert, setMessage} from "@/core/global/context/notiSlice.js";
 import {useGetAllMembersQuery} from "@/features/members/membersApi.js";
 
 const AddNewIssuedBookForm = () => {
@@ -72,21 +72,18 @@ const AddNewIssuedBookForm = () => {
                 issuedBookData,
                 token,
             });
+
             if (data?.success) {
-                setIsSubmitting(false);
-                dispatch(
-                    setAlert({
-                        alertType: "success",
-                        alertMsg: data?.message,
-                    })
-                );
                 closeModal();
+                dispatch(setMessage({msgType : "success", msgContent : data?.message}))
             } else {
-                setIsSubmitting(false);
-                setError(apiError?.data?.message || apiError?.error);
+                setIsSubmitting(false)
+                dispatch(setMessage({msgType: "error", msgContent: apiError?.data?.message || apiError?.error }))
             }
         } catch (error) {
             throw new Error(error);
+        }  finally {
+            setIsSubmitting(false)
         }
     };
 
@@ -186,6 +183,12 @@ const AddNewIssuedBookForm = () => {
                         name="issuedDate"
                         label="Issued Date"
                         initialValue={dayjs()}
+                        rules={[
+                            {
+                                required: true,
+                                message : "Issued date is required!",
+                            }
+                        ]}
                     >
                         <DatePicker
                             format={"DD-MM-YYYY"}
@@ -194,7 +197,7 @@ const AddNewIssuedBookForm = () => {
                         />
                     </Form.Item>
 
-                    <FormSubmitBtn isSubmitting={isSubmitting} label={"Save"} isDisabled={isFormEmpty} extraStyle={"mt-12"} />
+                    <FormSubmitBtn isSubmitting={isSubmitting} label={"Save"} isDisabled={isFormEmpty} />
                 </Form>
             </Modal>
         </section>

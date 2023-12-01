@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useAddNewBooksMutation } from "./booksApi";
 import { ModalHeader, FormSubmitBtn } from "@/components";
 import {useDispatch, useSelector} from "react-redux";
-import {setAlert} from "@/core/global/context/notiSlice.js";
+import {setAlert, setMessage} from "@/core/global/context/notiSlice.js";
 import {scrollBackToTop} from "@/core/functions/scrollToTop.js";
 const AddNewBookForm = ({  setAddedCPBooks }) => {
     const { token } = useSelector((state) => state.authSlice);
@@ -44,20 +44,17 @@ const AddNewBookForm = ({  setAddedCPBooks }) => {
                 token,
             })
             if (data) {
-                dispatch(
-                    setAlert({
-                        alertType: "success",
-                        alertMsg: "New book created successfully!",
-                    })
-                );
+                dispatch(setMessage({msgType: "success", msgContent: "New book created successfully!"}))
                 setAddedCPBooks(data);
                 closeModal();
             } else {
-                setIsSubmitting(false)
-                setError(apiError?.data?.message || apiError?.error);
+                dispatch(setMessage({msgType: "error", msgContent: apiError?.data?.message || apiError?.error }))
+                setIsSubmitting(false);
             }
         } catch (error) {
             throw new Error(error);
+        }  finally {
+            setIsSubmitting(false)
         }
     };
 
@@ -135,7 +132,7 @@ const AddNewBookForm = ({  setAddedCPBooks }) => {
                         <InputNumber className="!h-10 !w-full flex flex-col justify-center" />
                     </Form.Item>
 
-                    <FormSubmitBtn label={"Save"} isSubmitting={isSubmitting} isDisabled={isFormEmpty} extraStyle={"mt-12"} />
+                    <FormSubmitBtn label={"Save"} isSubmitting={isSubmitting} isDisabled={isFormEmpty} />
                 </Form>
             </Modal>
         </section>

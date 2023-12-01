@@ -9,6 +9,13 @@ import RenewIssuedBooks from "./RenewIssuedBooks";
 import ReturnIssuedBooks from "./ReturnIssuedBooks";
 import { formatDateArray } from "@/core/functions/formatDateArray";
 import { useSelector } from "react-redux";
+import {formatPhoneNumber} from "@/core/functions/formatPhoneNumber.js";
+
+const searchedOptions = [
+    {label:  "Copied Id", value: "generatedId"}, {label : "Member Id", value : "memberId"},
+    {label:  "Name", value: "name"}, {label : "Phone", value : "phone"}
+
+]
 
 const IssuedBooksList = () => {
     const { token } = useSelector((state) => state.authSlice);
@@ -16,6 +23,7 @@ const IssuedBooksList = () => {
     const [date, setDate] = useState(dayjs());
     const [search, setSearch] = useState("");
     const [searchedBooks, setSearchedBooks] = useState([]);
+    const [selectedSearchedOpt, setSelectedSearchedOpt] = useState("generatedId")
     const { data, isLoading: isISBLoading } =
         useGetAllIssuedRecordsByFilterQuery({
             keyword,
@@ -24,54 +32,8 @@ const IssuedBooksList = () => {
         });
     const issuedBooks = data;
 
-    const allIssuedBooks = [
-        {
-            "id": 1,
-            "generatedId": "1B2C",
-            "title": "Under a Latent Moon",
-            "memberId": 5,
-            "issued": true,
-            "name": "Ei Khaing Phyo",
-            "phone": "09969609760",
-            "issuedDate": [
-                2023,
-                10,
-                10
-            ],
-            "checked": false,
-            "dueDate": [
-                2023,
-                10,
-                21
-            ],
-            "extensionTimes": 1
-        },
-        {
-            "id": 3,
-            "generatedId": "3B3C",
-            "title": "Into the Pit",
-            "memberId": 4,
-            "issued": false,
-            "name": "Watermelon",
-            "phone": "09969609761",
-            "issuedDate": [
-                2023,
-                10,
-                12
-            ],
-            "checked": false,
-            "dueDate": [
-                2023,
-                10,
-                23
-            ],
-            "extensionTimes": 1
-        },
-
-    ]
 
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
-
 
     const rowSelection = {
         selectedRowKeys,
@@ -83,18 +45,17 @@ const IssuedBooksList = () => {
         }),
     };
 
+    // searching issued books with `copiedId`, `memberId` , `member's name` & `member's phone number`
     useEffect(() => {
         const filteredBooks = issuedBooks?.filter(
-            (book) =>
-                book.generatedId
-                    .toString()
-                    .toLowerCase()
-                    .includes(search.toLowerCase()) ||
-                book.memberId.toString().includes(search) ||
-                book.name.toLowerCase().includes(search.toLowerCase())
-        );
+            book => book[selectedSearchedOpt].toString().toLowerCase().includes(search?.toLowerCase())
+        )
+
         setSearchedBooks(filteredBooks);
+
     }, [search]);
+
+
 
     const onDateChange = (value) => {
         setDate(value);
@@ -106,6 +67,11 @@ const IssuedBooksList = () => {
         setSearch("");
     };
 
+    const onSearchedOptChange = (value) => {
+        setSelectedSearchedOpt(value)
+    }
+
+    // tables columns
     const columns = [
         {
             title: "Copied Book ID",
@@ -131,6 +97,7 @@ const IssuedBooksList = () => {
             title: "Phone",
             dataIndex: "phone",
             key: "phone",
+            render: (_, book) => <p> {formatPhoneNumber(book?.phone)} </p>
         },
         {
             title: "Issued Date",
@@ -149,15 +116,15 @@ const IssuedBooksList = () => {
             dataIndex: "extensionTimes",
             key: "extensionTimes",
             render: (_, book) => (
-                <p> {book?.issued ? book?.extensionTimes : "-"} </p>
+                <p  > {book?.issued ? book?.extensionTimes : "-"} </p>
             ),
         },
     ];
 
     return (
-        <section className="px-10">
-            <div className="flex items-center gap-6 mb-11">
-                <TableTlt title={"Issued Books List"} />
+        <section className="px-10 pb-10">
+            <div className="flex items-center gap-6 mb-8">
+                <TableTlt title={"Issued Books"} />
                 <AddNewIssuedBookForm />
             </div>
             <div className="mb-6 flex items-center justify-between">
@@ -166,9 +133,9 @@ const IssuedBooksList = () => {
                         search={search}
                         setSearch={setSearch}
                         onChange={(e) => setSearch(e.target.value)}
-                        placeholder={
-                            "Search by Copy Book ID / Member ID / Name"
-                        }
+                        placeholder={"Search issued list"}
+                        searchedOptions={searchedOptions}
+                        onSearchedOptChange={onSearchedOptChange}
                     />
                     <DatePicker
                         picker="month"
@@ -214,10 +181,9 @@ const IssuedBooksList = () => {
             <Table
                 bordered
                 columns={columns}
-                // dataSource={
-                //     search?.trim().length > 0 ? searchedBooks : issuedBooks
-                // }
-                dataSource={allIssuedBooks}
+                dataSource={
+                    search?.trim().length > 0 ? searchedBooks : issuedBooks
+                }
                 loading={isISBLoading}
                 rowKey={(record) => record?.id}
                 rowSelection={rowSelection}

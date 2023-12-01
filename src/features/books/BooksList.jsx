@@ -9,6 +9,10 @@ import ChangeBookTitleForm from "./ChangeBookTitleForm";
 import AddedCopiedBooksList from "./AddedCopiedBooksList.jsx";
 import { useSelector } from "react-redux";
 
+const searchedOptions = [
+    {label:  "Book Id", value: "id"}, {label : "Book Title", value : "title"}
+]
+
 const BooksList = () => {
     const { token } = useSelector((state) => state.authSlice);
     const { data: booksData, isLoading: isBLoading } =
@@ -18,29 +22,20 @@ const BooksList = () => {
     const [search, setSearch] = useState("");
     const [searchedBooks, setSearchedBooks] = useState([]);
     const [addedCPBooks, setAddedCPBooks] = useState([]);
+    const [selectedSearchedOpt, setSelectedSearchedOpt] = useState("id");
+
+    const onSearchedOptChange = (value) => {
+        setSelectedSearchedOpt(value)
+    }
 
     useEffect(() => {
         const filteredBooks = books?.filter(
-            (book) =>
-                book?.title?.toLowerCase().includes(search.toLowerCase()) ||
-                book?.id?.toString().includes(search)
-        );
+            book => book[selectedSearchedOpt].toString().toLowerCase().includes(search?.toLowerCase())
+        )
         setSearchedBooks(filteredBooks);
     }, [search]);
 
     const [deleteBooks] = useDeleteBooksMutation();
-
-    // fake data
-    // const testData = [
-    //     {
-    //         id : 1,
-    //         title : "The Law of Human Nature",
-    //         totalBooks: 5,
-    //         leftoverBooks: 3,
-    //         totalIssuedBooks : 2,
-    //         damagedBooks : 0
-    //     }
-    // ]
 
     const columns = [
         {
@@ -92,13 +87,16 @@ const BooksList = () => {
             title: "Action",
             key: "action",
             render: (_, book) => (
-                <Space size="middle">
+                <Space size="middle" className={`flex justify-center`} >
                     <AddMoreBooksForm
                         bookId={book?.id}
                         setAddedCPBooks={setAddedCPBooks}
                     />
                     <ConfirmBox
-                        event={() => deleteBooks({ id: book?.id, token })}
+                        event={() => {
+                            deleteBooks({id: book?.id, token});
+                            setAddedCPBooks([])
+                        }}
                         type={"book"}
                     />
                 </Space>
@@ -107,7 +105,7 @@ const BooksList = () => {
     ];
 
     return (
-        <section className="px-10">
+        <section className="px-10 pb-10">
                 {addedCPBooks?.length > 0 ? (
             <div className="mb-5">
                     <AddedCopiedBooksList copiedBooks={addedCPBooks} />
@@ -115,8 +113,8 @@ const BooksList = () => {
                 ) : (
                     ""
                 )}
-            <div className="flex items-center gap-6 mb-11 ">
-                <TableTlt title={"Books List"} />
+            <div className="flex items-center gap-6 mb-8 ">
+                <TableTlt title={"Books"} />
                 <AddNewBookForm
                     setAddedCPBooks={setAddedCPBooks}
                 />
@@ -125,7 +123,9 @@ const BooksList = () => {
                 search={search}
                 setSearch={setSearch}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder={"Search by Book ID / Title"}
+                placeholder={"Search book"}
+                searchedOptions={searchedOptions}
+                onSearchedOptChange={onSearchedOptChange}
             />
             <div className={`mt-6`} >
                 <Table

@@ -7,6 +7,13 @@ import dayjs from "dayjs";
 import RenewIssuedBooks from "./RenewIssuedBooks";
 import ReturnIssuedBooks from "./ReturnIssuedBooks";
 import { formatDateArray } from "@/core/functions/formatDateArray";
+import {formatPhoneNumber} from "@/core/functions/formatPhoneNumber.js";
+
+const searchedOptions = [
+        {label:  "Copied Id", value: "generatedId"}, {label : "Member Id", value : "memberId"},
+    {label:  "Name", value: "name"}, {label : "Phone", value : "phone"}
+
+]
 
 const IssuedBooksList = ({
     issuedBooks,
@@ -17,6 +24,7 @@ const IssuedBooksList = ({
     const [searchedBooks, setSearchedBooks] = useState([]);
     const [search, setSearch] = useState("");
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+    const [selectedSearchedOpt, setSelectedSearchedOpt] = useState("generatedId")
     const onSelectChange = (record) => {
         setSelectedRowKeys(record);
     };
@@ -28,16 +36,14 @@ const IssuedBooksList = ({
 
     useEffect(() => {
         const filteredBooks = issuedBooks?.filter(
-            (book) =>
-                book.memberId.toString().includes(search) ||
-                book.generatedId
-                    .toString()
-                    .toLowerCase()
-                    .includes(search.toLowerCase()) ||
-                book.name.toLowerCase().includes(search.toLowerCase())
-        );
+            book => book[selectedSearchedOpt].toString().toLowerCase().includes(search?.toLowerCase())
+        )
         setSearchedBooks(filteredBooks);
     }, [search]);
+
+    const onSearchedOptChange = (value) => {
+        setSelectedSearchedOpt(value)
+    }
 
     const onDateChange = (value) => {
         setDate(value);
@@ -68,7 +74,8 @@ const IssuedBooksList = ({
         {
             title : "Phone",
             dataIndex: "phone",
-            key: "phone"
+            key: "phone",
+            render: (_, book) => <p> {formatPhoneNumber(book?.phone)} </p>,
         },
         {
             title: "Issued Date",
@@ -87,15 +94,15 @@ const IssuedBooksList = ({
             dataIndex: "extensionTimes",
             key: "extensionTimes",
             render: (_, book) => (
-                <p> {book?.issued ? book?.extensionTimes : "-"} </p>
+                <p className={` ${!book?.issued ? " text-center " : ""  } `} > {book?.issued ? book?.extensionTimes : "-"} </p>
             ),
         },
     ];
 
     return (
         <section className="p-3 px-10">
-            <div className="flex items-center gap-6 mb-11">
-                <TableTlt title={"Issued Books List"} />{" "}
+            <div className="flex items-center gap-6 mb-8">
+                <TableTlt title={"Issued Books"} />{" "}
                 <AddNewIssuedBookForm />
             </div>
             <div className="flex items-center justify-between mb-6">
@@ -107,8 +114,10 @@ const IssuedBooksList = ({
                         setSearch={setSearch}
                         onChange={(e) => setSearch(e.target.value)}
                         placeholder={
-                            "Search by Copy Book Id/ Member Id/ Member Name"
+                            "Search issued list"
                         }
+                        searchedOptions={searchedOptions}
+                        onSearchedOptChange={onSearchedOptChange}
                     />
                     <DatePicker
                         picker="month"

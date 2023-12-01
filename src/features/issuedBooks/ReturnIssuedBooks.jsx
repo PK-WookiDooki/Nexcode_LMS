@@ -4,7 +4,7 @@ import { Alert, Button, Modal } from "antd";
 import { BsExclamationCircle } from "react-icons/bs";
 import { useDispatch, useSelector } from "react-redux";
 import { scrollBackToTop } from "@/core/functions/scrollToTop";
-import {setAlert} from "@/core/global/context/notiSlice.js";
+import {setAlert, setMessage} from "@/core/global/context/notiSlice.js";
 
 const ReturnIssuedBooks = ({ issuedBookIds, setSelectedRowKeys, setSearch }) => {
     const { token } = useSelector((state) => state.authSlice);
@@ -32,16 +32,11 @@ const ReturnIssuedBooks = ({ issuedBookIds, setSelectedRowKeys, setSearch }) => 
             });
             if (data?.success) {
                 onModalClose();
-                dispatch(
-                    setAlert({
-                        alertType: "success",
-                        alertMsg: ` ${issuedBookIds?.length > 1 ? "Books" : "Book"} return successful!`,
-                    })
-                );
+                dispatch(setMessage({msgType: "success", msgContent: ` ${issuedBookIds?.length > 1 ? "Books" : "Book"} returned successfully!`}));
                 setSearch("")
             } else {
                 setIsSubmitting(false);
-                setError(apiError?.data?.message || apiError?.error);
+                dispatch(setMessage({msgType: "error", msgContent: apiError?.data?.message || apiError?.error}));
             }
         } catch (error) {
             throw new Error(error);

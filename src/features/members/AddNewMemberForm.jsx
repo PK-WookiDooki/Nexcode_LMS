@@ -3,7 +3,7 @@ import {useEffect, useState} from "react";
 import { useAddNewMembersMutation } from "./membersApi";
 import {FormSubmitBtn, ModalHeader} from "@/components";
 import {useDispatch, useSelector} from "react-redux";
-import {setAlert} from "@/core/global/context/notiSlice.js";
+import {setAlert, setMessage} from "@/core/global/context/notiSlice.js";
 import {scrollBackToTop} from "@/core/functions/scrollToTop.js";
 
 const AddNewMemberForm = () => {
@@ -25,7 +25,7 @@ const AddNewMemberForm = () => {
         if(nameValue?.trim().length > 0 && phoneValue?.trim().length > 0 && addressValue?.trim().length > 0){
             setIsFormEmpty(false)
         }
-    }, [nameValue, phoneValue]);
+    }, [nameValue, phoneValue, addressValue]);
 
     const [addNewMembers] = useAddNewMembersMutation();
     const onFinish = async (values) => {
@@ -36,14 +36,16 @@ const AddNewMemberForm = () => {
                 token,
             });
             if (data?.success) {
-                dispatch(setAlert({alertType: "success", alertMsg : data?.message}))
+                dispatch(setMessage({msgType: "success", msgContent: data?.mesage}))
                 closeModal();
             } else {
-                setIsSubmitting(false)
-                setError(apiError?.data || apiError?.error);
+                dispatch(setMessage({msgType: "error", msgContent: apiError?.data?.message || apiError?.error }))
+                setIsSubmitting(false);
             }
         } catch (error) {
             throw new Error(error);
+        }  finally {
+            setIsSubmitting(false)
         }
     };
 
@@ -51,7 +53,8 @@ const AddNewMemberForm = () => {
         scrollBackToTop()
         form.resetFields();
         setError(null)
-        setIsSubmitting(false)
+        setIsSubmitting(false);
+        setIsFormEmpty(true)
         setOpenModal(false);
     };
 
@@ -107,7 +110,7 @@ const AddNewMemberForm = () => {
                             },
                         ]}
                     >
-                        <Input />
+                        <Input autoComplete={"off"} />
                     </Form.Item>
                     <Form.Item
                         label="Phone No."
@@ -118,12 +121,12 @@ const AddNewMemberForm = () => {
                                 message: "Please enter phone number!",
                             },
                             {
-                                pattern : /^(09)\d{9}$/,
+                                pattern : /^(09)\d{6,9}$/,
                                 message : "Please enter valid phone number!"
                             }
                         ]}
                     >
-                        <Input />
+                        <Input autoComplete={"off"}  />
                     </Form.Item>
                     <Form.Item label="Address" name="address"
                                rules={[
@@ -132,9 +135,9 @@ const AddNewMemberForm = () => {
                                        message: "Please enter member address!",
                                    },
                                ]}>
-                        <Input />
+                        <Input autoComplete={"off"} />
                     </Form.Item>
-                    <FormSubmitBtn label={"Save"} isSubmitting={isSubmitting} isDisabled={isFormEmpty} extraStyle={"mt-12"} />
+                    <FormSubmitBtn label={"Save"} isSubmitting={isSubmitting} isDisabled={isFormEmpty}  />
                 </Form>
             </Modal>
         </section>

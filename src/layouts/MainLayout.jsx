@@ -37,10 +37,17 @@ const MainLayout = () => {
 
 
     useEffect(() => {
+        // if(location){
+        //     dispatch(setAlert({alertType : null, alertMsg : null}));
+        // }
         if(location){
-            dispatch(setAlert({alertType : null, alertMsg : null}));
+            resetAlert()
         }
     }, [location])
+
+    const resetAlert = () => {
+        dispatch(setAlert({alertType : null, alertMsg : null}))
+    }
 
     return (
         <main className="wrapper">
@@ -51,8 +58,11 @@ const MainLayout = () => {
                 <div className="h-full text-black">
 
                     {
-                        alert.alertType && alert.alertMsg ? <div className={` px-10 mb-8`}> <Alert message={alert.alertMsg} type={alert.alertType} closable={true} className={" !text-c52 !pl-10 !bg-c52/[15%] !border-c52/[15%] rounded-sm capitalize "} /> </div> : null
+                        alert.alertType && alert.alertMsg ? <div className={` px-10 mb-8`}> <Alert message={alert.alertMsg} type={alert.alertType} closable={true} className={" !text-c52 !pl-4 !bg-c52/[15%] !border-c52/[15%] rounded-sm capitalize "} onClose={resetAlert} /> </div> : null
                     }
+
+                    {/*<div className={` px-10 mb-8`}> <Alert message={"Hello"} type={"success"} closable={true} className={" !text-c52 !pl-10 !bg-c52/[15%] !border-c52/[15%] rounded-sm capitalize "} onClose={resetAlert} /> </div>*/}
+
                     <Outlet />
                 </div>
             </section>

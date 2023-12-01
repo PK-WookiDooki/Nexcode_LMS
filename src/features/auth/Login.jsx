@@ -73,6 +73,8 @@ const Login = () => {
             }
         } catch (error) {
             throw new Error(error);
+        } finally {
+            setIsSubmitting(false)
         }
     };
 
@@ -80,7 +82,7 @@ const Login = () => {
         <section className="min-h-screen flex items-center justify-center bg-lightBlue ">
             <div className="flex items-center justify-center w-full gap-32">
                 <img src={imgBg} alt="Login Image" />
-                <div className=" self-stretch w-full max-w-[1px] bg-black/30"></div>
+                <div className=" h-[400px] w-full max-w-[1px] bg-black/30"></div>
                 <div className="max-w-[480px] w-full p-10 rounded-md shadow-md shadow-[#8FB5FF] bg-white">
                     <Quote/>
                     <FormTlt isCenter={true} title={"log in to dashboard"} />

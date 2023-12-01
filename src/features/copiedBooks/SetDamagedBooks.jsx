@@ -3,7 +3,7 @@ import { useSetCopiedBooksStatusMutation } from "./copiedBooksApi";
 import { Alert, Button, Modal } from "antd";
 import { BsExclamationCircle } from "react-icons/bs";
 import {useDispatch, useSelector} from "react-redux";
-import {setAlert} from "@/core/global/context/notiSlice.js";
+import {setMessage} from "@/core/global/context/notiSlice.js";
 import {scrollBackToTop} from "@/core/functions/scrollToTop.js";
 
 const SetDamagedBooks = ({ generatedIds, setSelectedRowKeys }) => {
@@ -39,18 +39,26 @@ const SetDamagedBooks = ({ generatedIds, setSelectedRowKeys }) => {
             });
             if (data?.success) {
                 dispatch(
-                    setAlert({
-                        alertType: "success",
-                        alertMsg: data?.message,
+                    setMessage({
+                        msgType: "success",
+                        msgContent: data?.message,
                     })
                 );
                 closeModal();
+                setIsSubmitting(false)
             } else {
                 setIsSubmitting(false)
-                setError(apiError?.data?.message || apiError?.error);
+                dispatch(
+                    setMessage({
+                        msgType: "error",
+                        msgContent: apiError?.data?.message || apiError?.error,
+                    })
+                );
             }
         } catch (error) {
             throw new Error(error);
+        } finally {
+            setIsSubmitting(false)
         }
     };
 
@@ -71,10 +79,10 @@ const SetDamagedBooks = ({ generatedIds, setSelectedRowKeys }) => {
                 onCancel={closeModal}
                 closeIcon={false}
                 centered
-                okText="Confirm"
+                okText="Damage"
                 okButtonProps={{
                     type: "primary",
-                    className: "confirm-btn",
+                    className: "delete-btn",
                     loading : isSubmitting
                 }}
                 cancelButtonProps={{
@@ -83,7 +91,7 @@ const SetDamagedBooks = ({ generatedIds, setSelectedRowKeys }) => {
                 }}
                 onOk={setDamagedBooks}
                 className="confirm-box"
-                width={""}
+                width={500}
             >
                 {error?.trim().length > 0 ? (
                     <Alert
@@ -97,7 +105,7 @@ const SetDamagedBooks = ({ generatedIds, setSelectedRowKeys }) => {
                 )}
 
                 <div className="flex flex-row items-center justify-center gap-3 pb-6">
-                    <BsExclamationCircle className="text-2xl text-yellow-500" />
+                    <BsExclamationCircle className="text-2xl text-yellow-500 min-w-max" />
                     <h2 className="text-lg font-medium">
                         {" "}
                         Are you sure you want to add these books to damaged books list

@@ -12,21 +12,22 @@ import {
 } from "./features";
 import { IsAuthenticated, IsNotAuthenticated } from "./components";
 import { useDispatch, useSelector } from "react-redux";
-import { ConfigProvider, message } from "antd";
+import {ConfigProvider, notification} from "antd";
 import { useEffect } from "react";
 import { setMessage } from "./core/global/context/notiSlice";
 
 const App = () => {
     const { message: apiMessage } = useSelector((state) => state.notiSlice);
-    const [messageApi, contextHolder] = message.useMessage();
+    const [api, contextHolder] = notification.useNotification();
     const dispatch = useDispatch();
 
     useEffect(() => {
         if (apiMessage.msgType && apiMessage.msgContent) {
-            messageApi.open({
-                type: apiMessage.msgType,
-                content: apiMessage.msgContent,
-                duration: 5,
+            api[apiMessage.msgType]({
+                message : apiMessage.msgType.charAt(0).toUpperCase() + apiMessage.msgType.slice(1)  ,
+                description: apiMessage.msgContent,
+                duration: 3,
+                placement: "top"
             });
             dispatch(setMessage({ msgType: null, msgContent: null }));
         }
@@ -38,7 +39,7 @@ const App = () => {
                 components: {
                     Button: {
                         controlHeight: 40,
-                        controlHeightSM: 24,
+                        controlHeightSM: 32,
                     },
                     Input: {
                         controlHeight: 40,

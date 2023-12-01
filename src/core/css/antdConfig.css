@@ -7,9 +7,20 @@
   border-radius: 0.375rem !important;
 }
 
+.searchedInput .ant-input{
+  border-radius: 0 0.375rem 0.375rem 0 !important;
+  border-left: 0px;
+}
+
+.searchedInput .ant-select-selector{
+  border-radius: 0.375rem 0 0 0.375rem  !important;
+  max-width: 120px;
+  width: 100%;
+  outline: none !important;
+}
+
 .ant-input-password{
-  padding: 0;
-  padding-right: 10px;
+  padding: 0 10px 0 0 ;
 }
 
 .ant-select-selector, .ant-picker{
@@ -36,8 +47,8 @@
 }
 
 .ant-picker-suffix, .ant-select-arrow, .ant-select-clear{
-  color: rgb(0, 0, 0, 0.6) !important;
-  font-size: 16px !important;
+  color: rgb(0, 0, 0, 0.4) !important;
+  font-size: 14px !important;
 }
 
 label{
@@ -53,25 +64,27 @@ label{
 }
 
 .ant-pagination-item a{
-  font-size: 16px !important;
+  font-size: 14px !important;
+  border-radius: 6px;
 }
 
 .ant-pagination-item-active{
   border-color: #1890FF !important;
 }
 
-.ant-pagination-item-active a, .ant-pagination-item:hover a{
+.ant-pagination-item-active a{
   color: #1890FF !important;
 }
 
 /* ant table row */
 .ant-table-row td{
   border-bottom: 1px solid #F0F5FF !important;
+  /*text-align: center;*/
 }
 
-.ant-table-row:hover td{
-  background-color: #CEE6FD !important;
-}
+/*.ant-table-row:hover td{*/
+/*  background-color: #CEE6FD !important;*/
+/*}*/
 
 .ant-table-row-selected td{
   background-color: #CEE6FD !important;
@@ -108,6 +121,7 @@ label{
 .ant-table-thead th{
   background-color: #F0F5FF !important;
   border-bottom: 1px solid #D6E4FF !important;
+  text-align: center !important;
 }
 
 /* modals */

@@ -4,7 +4,8 @@ import { useAddMoreBooksMutation } from "./booksApi";
 import {useDispatch, useSelector} from "react-redux";
 import { ActionBtn, ModalHeader, FormSubmitBtn } from "@/components";
 import { scrollBackToTop } from "@/core/functions/scrollToTop";
-import {setAlert} from "@/core/global/context/notiSlice.js";
+import {setAlert, setMessage} from "@/core/global/context/notiSlice.js";
+import {removeCookies, setLoginStatus} from "@/features/auth/authSlice.js";
 
 const AddMoreBooksForm = ({
     bookId,
@@ -43,17 +44,12 @@ const AddMoreBooksForm = ({
                 token,
             });
             if (data) {
-                dispatch(
-                    setAlert({
-                        alertType: "success",
-                        alertMsg: "New books added successfully!",
-                    })
-                );
-                setAddedCPBooks(data);
+                setAddedCPBooks(data?.copiedBooks);
+                dispatch(setMessage({msgType : "success", msgContent : "New books added successfully!"}))
                 closeModal();
             } else {
                 setIsSubmitting(false)
-                setError(apiError?.data?.message || apiError?.error);
+                dispatch(setMessage({msgType: "error", msgContent: apiError?.data?.message || apiError?.error }))
             }
         } catch (error) {
             throw new Error(error);
@@ -121,7 +117,7 @@ const AddMoreBooksForm = ({
                             className="!w-full !h-10 flex flex-col justify-center"
                         />
                     </Form.Item>
-                    <FormSubmitBtn label={"Save"} isSubmitting={isSubmitting} extraStyle={"mt-12"} isDisabled={isFormEmpty} />
+                    <FormSubmitBtn label={"Save"} isSubmitting={isSubmitting} isDisabled={isFormEmpty} />
                 </Form>
             </Modal>
         </section>

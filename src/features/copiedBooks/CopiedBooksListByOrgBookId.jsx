@@ -6,6 +6,9 @@ import { useParams, Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { MdArrowBack } from "react-icons/md";
 import SetDamagedBooks from "./SetDamagedBooks";
+
+const searchedOptions = [{label : "Copied Id", value : "generatedId"}]
+
 const CopiedBooksList = () => {
     const { bookId } = useParams();
     const { token } = useSelector((state) => state.authSlice);
@@ -15,27 +18,13 @@ const CopiedBooksList = () => {
     });
     const copiedBooks = data;
 
-    // fake data
-    // const copiedBooks = [ {
-    //         "generatedId": "1B1C",
-    //         "damaged": false,
-    //         "issued": false,
-    //         "title": "Under a Latent Moon"
-    //     },
-    //     {
-    //         "generatedId": "1B2C",
-    //         "damaged": false,
-    //         "issued": true,
-    //         "title": "Under a Latent Moon"
-    //     }]
-
-
     const [search, setSearch]= useState("")
     const [filteredBooks, setFilteredBooks] = useState([])
+    const [selectedSearchedOpt, setSelectedSearchedOpt] = useState("generatedId")
 
     useEffect(() => {
         if(search?.trim().length > 0){
-            const searchedBooks = copiedBooks?.filter(book => book?.generatedId.toLowerCase().includes(search.toLowerCase()));
+            const searchedBooks = copiedBooks?.filter(book => book[selectedSearchedOpt].toLowerCase().includes(search.toLowerCase()));
             setFilteredBooks(searchedBooks)
         }
     }, [search]);
@@ -70,7 +59,7 @@ const CopiedBooksList = () => {
             key: "issued",
             render: (_, book) => (
                 <p
-                    className={` flex items-center gap-2 ${
+                    className={` flex items-center justify-center gap-2 ${
                         book?.issued || book?.damaged
                             ? "text-danger"
                             : " text-c52 "
@@ -97,7 +86,7 @@ const CopiedBooksList = () => {
             key: "damaged",
             render: (_, book) => (
                 <p
-                    className={` flex items-center gap-2 ${
+                    className={` flex items-center justify-center gap-2 ${
                         book?.damaged ? "text-danger" : " text-c52 "
                     } `}
                 >
@@ -113,7 +102,7 @@ const CopiedBooksList = () => {
     ];
 
     return (
-        <section className="px-10">
+        <section className="px-10 pb-10">
             <Link
                 to={".."}
                 className="flex items-center gap-1 font-medium  text-black hover:text-black/80 duration-200 w-fit mb-4"
@@ -122,12 +111,14 @@ const CopiedBooksList = () => {
                 <MdArrowBack className="text-xl" /> Books List
             </Link>
             <TableTlt title={`Copied Books ID List`} />
-            <div className="flex items-center justify-between mb-6 mt-11">
+            <div className="flex items-center justify-between mb-6 mt-8">
             <SearchForm
                 search={search}
                 setSearch={setSearch}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder={"Search by Copied Book ID"}
+                searchedOptions={searchedOptions}
+                onSearchedOptChange={(value) => setSelectedSearchedOpt(value)}
             /> <SetDamagedBooks
                 generatedIds={selectedRowKeys}
                 setSelectedRowKeys={setSelectedRowKeys}
@@ -135,6 +126,7 @@ const CopiedBooksList = () => {
             </div>
 
             <Table
+                bordered
                 className="copied-table"
                 columns={columns}
                 dataSource={search?.trim().length > 0 ? filteredBooks : copiedBooks}

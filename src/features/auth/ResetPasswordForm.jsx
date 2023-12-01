@@ -55,6 +55,8 @@ const ResetPasswordForm = () => {
             }
         } catch (error) {
             throw new Error(error);
+        }  finally {
+            setIsSubmitting(false)
         }
     };
 

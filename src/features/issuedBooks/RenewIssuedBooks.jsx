@@ -3,8 +3,7 @@ import { useRenewIssuedBooksMutation } from "./issuedBooksApi";
 import { Alert, Button, Modal } from "antd";
 import { BsExclamationCircle } from "react-icons/bs";
 import { useDispatch, useSelector } from "react-redux";
-import { scrollBackToTop } from "@/core/functions/scrollToTop";
-import {setAlert} from "@/core/global/context/notiSlice.js";
+import {setMessage} from "@/core/global/context/notiSlice.js";
 
 const RenewIssuedBooks = ({ issuedBookIds, setSelectedRowKeys, setSearch }) => {
     const { token } = useSelector((state) => state.authSlice);
@@ -17,7 +16,6 @@ const RenewIssuedBooks = ({ issuedBookIds, setSelectedRowKeys, setSearch }) => {
 
     const closeModal = () => {
         setError(null);
-        scrollBackToTop();
         setSelectedRowKeys([]);
         setOpen(false);
         setIsSubmitting(false)
@@ -32,17 +30,12 @@ const RenewIssuedBooks = ({ issuedBookIds, setSelectedRowKeys, setSearch }) => {
             });
 
             if (data?.success) {
-                dispatch(
-                    setAlert({
-                        alertType: "success",
-                        alertMsg: ` ${issuedBookIds?.length > 1 ? "Books" : "Book"} renewal successful!`,
-                    })
-                );
+                dispatch(setMessage({msgType: "success", msgContent: data?.message}));
                 setSearch("")
                 closeModal();
             } else {
                 setIsSubmitting(false);
-                setError(apiError?.data?.message || apiError?.error);
+                dispatch(setMessage({msgType: "error", msgContent: apiError?.data?.message || apiError?.error}));
             }
         } catch (error) {
             throw new Error(error);

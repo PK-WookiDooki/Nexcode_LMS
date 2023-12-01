@@ -4,8 +4,7 @@ import { formatDateArray } from "@/core/functions/formatDateArray";
 import { forwardRef, useEffect, useState } from "react";
 import { useAddOverdueBooksToCheckListMutation } from "./issuedBooksApi";
 import { useDispatch, useSelector } from "react-redux";
-import { scrollBackToTop } from "@/core/functions/scrollToTop";
-import {setAlert} from "@/core/global/context/notiSlice.js";
+import { setMessage} from "@/core/global/context/notiSlice.js";
 import {formatPhoneNumber} from "@/core/functions/formatPhoneNumber.js";
 
 const ODDBooksList = forwardRef(function ODDBooksList(
@@ -53,19 +52,18 @@ const ODDBooksList = forwardRef(function ODDBooksList(
                 token,
             });
             if (data?.success) {
-                scrollBackToTop();
                 setSelectedRowKeys([]);
                 dispatch(
-                    setAlert({
-                        alertType: "success",
-                        alertMsg: data?.message,
+                    setMessage({
+                        msgType: "success",
+                        msgContent: data?.message,
                     })
                 );
             } else {
                 dispatch(
-                    setAlert({
-                        alertType: "error",
-                        alertMsg: error?.data?.message || error?.error,
+                    setMessage({
+                        msgType: "error",
+                        msgContent: error?.data?.message || error?.error,
                     })
                 );
             }
@@ -118,7 +116,7 @@ const ODDBooksList = forwardRef(function ODDBooksList(
     return (
         <section ref={ref} className="p-3 px-10" id="odb">
             <div className="flex items-center justify-between mb-6">
-                <TableTlt title={"Overdue Date Books List"} />
+                <TableTlt title={"Overdue Books"} />
                 <Button
                     type="primary"
                     onClick={addOBBToContactedList}
@@ -134,6 +132,7 @@ const ODDBooksList = forwardRef(function ODDBooksList(
             </div>
 
             <Table
+                bordered
                 columns={columns}
                 dataSource={oddBooks}
                 loading={isISBLoading || isOODBLoading}

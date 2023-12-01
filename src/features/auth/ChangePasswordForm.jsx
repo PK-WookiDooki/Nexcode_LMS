@@ -71,7 +71,7 @@ const ChangePasswordForm = () => {
                 nav("/login");
             } else {
                 setIsSubmitting(false)
-                setError(apiError?.data?.message || apiError?.error);
+                dispatch(setMessage({msgType: "error", msgContent: apiError?.data?.message || apiError?.error }))
             }
         } catch (error) {
             throw new Error(error);
@@ -189,7 +189,7 @@ const ChangePasswordForm = () => {
                     <FormSubmitBtn
                         label={"Save Changes"}
                         isFullWidth={false}
-                        extraStyle={"mt-12"}
+                        extraStyle={" w-full mt-12 "}
                         isSubmitting={isSubmitting}
                         isDisabled={isFormEmpty}
                     />
